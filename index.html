@@ -155,6 +155,7 @@
             left: 1rem;
             width: 24rem;
             border: 2px solid #86efac;
+            padding-bottom: 0;
         }
         
         .modal-header {
@@ -370,6 +371,25 @@
                 width: calc(100vw - 2rem);
                 left: 1rem;
                 right: 1rem;
+                bottom: 0.5rem;
+                max-height: calc(100vh - 160px);
+                padding-bottom: 0;
+            }
+            
+            #delete-form {
+                padding-bottom: 5rem;
+            }
+            
+            .delete-btn-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 1rem;
+                background: white;
+                border-top: 2px solid #dc2626;
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
+                z-index: 10001;
             }
             
             #add-btn {
@@ -527,13 +547,15 @@
                     <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
                 </div>
                 
-                <div class="action-buttons">
-                    <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
-                        Șterge Pin
-                    </button>
-                    <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
-                        Anulează
-                    </button>
+                <div class="delete-btn-container">
+                    <div class="action-buttons">
+                        <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
+                            Șterge Pin
+                        </button>
+                        <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
+                            Anulează
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -597,6 +619,20 @@
                 } else {
                     document.getElementById('location-success').classList.remove('hidden');
                 }
+                
+                // Add temporary marker at clicked location
+                if (window.tempMarker) {
+                    window.tempMarker.remove();
+                }
+                
+                window.tempMarker = L.marker([e.latlng.lat, e.latlng.lng], {
+                    icon: L.divIcon({
+                        html: '<div style="font-size: 48px; animation: pulse 1s infinite;">📍</div><style>@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); }}</style>',
+                        className: 'temp-marker',
+                        iconSize: [48, 48],
+                        iconAnchor: [24, 48]
+                    })
+                }).addTo(map);
             });
             
             setTimeout(() => {
@@ -688,6 +724,12 @@
             clickedLocation = null;
             selectedIcon = '🎄';
             initIconGrid();
+            
+            // Remove temporary marker
+            if (window.tempMarker) {
+                window.tempMarker.remove();
+                window.tempMarker = null;
+            }
         }
         
         function handleSubmit(e) {
@@ -730,6 +772,13 @@
             database.ref('pins').push(pinData)
                 .then(() => {
                     closeAddModal();
+                    
+                    // Remove temporary marker
+                    if (window.tempMarker) {
+                        window.tempMarker.remove();
+                        window.tempMarker = null;
+                    }
+                    
                     alert('✅ Casă adăugată cu succes!');
                 })
                 .catch((error) => {
