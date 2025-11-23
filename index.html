@@ -155,6 +155,7 @@
             left: 1rem;
             width: 24rem;
             border: 2px solid #86efac;
+            padding-bottom: 0;
         }
         
         .modal-header {
@@ -358,7 +359,7 @@
                 right: 1rem;
                 max-height: calc(100vh - 160px);
                 top: 0.5rem;
-                overflow-y: scroll;
+                padding-bottom: 5rem;
             }
             
             .modal-view {
@@ -366,8 +367,24 @@
                 left: 1rem;
                 right: 1rem;
                 bottom: 0.5rem;
-                max-height: calc(100vh - 200px);
-                overflow-y: auto;
+                max-height: calc(100vh - 160px);
+                padding-bottom: 0;
+            }
+            
+            #delete-form {
+                padding-bottom: 5rem;
+            }
+            
+            .delete-btn-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 1rem;
+                background: white;
+                border-top: 2px solid #dc2626;
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
+                z-index: 10001;
             }
             
             #add-btn {
@@ -386,10 +403,22 @@
             }
             
             .submit-btn-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 1rem;
                 background: white;
-                padding-top: 1rem;
-                margin-top: 1rem;
                 border-top: 2px solid #dc2626;
+                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
+                z-index: 10001;
+            }
+            
+            .submit-btn-container .btn {
+                width: 100%;
+                padding: 1rem;
+                font-size: 1rem;
+                font-weight: bold;
             }
         }
     </style>
@@ -414,7 +443,7 @@
         <div id="instructions-content">
             <span>⚠️</span>
             <div>
-                <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Apasă "Adaugă Casa Mea" → Completează formularul
+                <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Completează formularul → Apasă "Adaugă pe Hartă"
             </div>
         </div>
     </div>
@@ -491,7 +520,7 @@
                     <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
                 </div>
                 
-                <!-- Spacer pentru scroll pe mobil -->
+                <!-- Spacer pentru a putea face scroll -->
                 <div style="height: 120px;"></div>
                 
                 <div class="submit-btn-container">
@@ -516,8 +545,8 @@
                     <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
                 </div>
                 
-                <!-- Spacer pentru scroll pe mobil -->
-                <div style="height: 150px;"></div>
+                <!-- Spacer pentru a putea face scroll pe mobil -->
+                <div style="height: 80px;"></div>
                 
                 <div style="padding-top: 1rem; border-top: 2px solid #e5e7eb;">
                     <div class="action-buttons">
@@ -587,7 +616,7 @@
             map.on('click', (e) => {
                 clickedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
                 
-                // Add temporary marker
+                // Add temporary marker at clicked location
                 if (window.tempMarker) {
                     window.tempMarker.remove();
                 }
@@ -601,7 +630,7 @@
                     })
                 }).addTo(map);
                 
-                // Update form if open
+                // Update location in form if it's open
                 if (!document.getElementById('add-modal').classList.contains('hidden')) {
                     document.getElementById('location-success').classList.remove('hidden');
                 }
@@ -660,14 +689,6 @@
                     })
                 }).addTo(map);
                 
-                // Tooltip on hover
-                const tooltipText = `<strong>${pin.name}</strong><br>Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-                marker.bindTooltip(tooltipText, {
-                    direction: 'top',
-                    offset: [0, -40],
-                    opacity: 0.95
-                });
-                
                 marker.on('click', () => showPin(pin));
                 markers.push(marker);
             });
@@ -706,6 +727,7 @@
             selectedIcon = '🎄';
             initIconGrid();
             
+            // Remove temporary marker
             if (window.tempMarker) {
                 window.tempMarker.remove();
                 window.tempMarker = null;
@@ -753,6 +775,7 @@
                 .then(() => {
                     closeAddModal();
                     
+                    // Remove temporary marker
                     if (window.tempMarker) {
                         window.tempMarker.remove();
                         window.tempMarker = null;
@@ -842,4 +865,9 @@
                 })
                 .catch((error) => {
                     console.error('Delete error:', error);
-                    alert('Eroare la ștergere: ' +
+                    alert('Eroare la ștergere: ' + error.message);
+                });
+        }
+    </script>
+</body>
+</html>
