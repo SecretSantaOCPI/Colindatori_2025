@@ -1,873 +1,283 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colindători Bine Veniți - Cartier Tineri Buftea</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        #header {
-            background: linear-gradient(to right, #dc2626, #16a34a);
-            color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        #header-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        #header-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        #header h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        #header p {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-        
-        #pin-count {
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 600;
-        }
-        
-        #instructions {
-            background: #fef3c7;
-            border-bottom: 2px solid #fcd34d;
-            padding: 0.75rem 1rem;
-        }
-        
-        #instructions-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            gap: 0.75rem;
-            font-size: 0.875rem;
-            color: #92400e;
-        }
-        
-        #map-container {
-            position: relative;
-            height: calc(100vh - 140px);
-        }
-        
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 9999px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(to right, #dc2626, #16a34a);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-        }
-        
-        .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-        }
-        
-        .btn-secondary:hover {
-            background: #d1d5db;
-        }
-        
-        .modal {
-            position: absolute;
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
-            padding: 1.5rem;
-            z-index: 9999;
-            max-height: calc(100vh - 180px);
-            overflow-y: auto;
-        }
-        
-        .modal-add {
-            top: 1rem;
-            right: 1rem;
-            width: 24rem;
-            border: 2px solid #fca5a5;
-            max-width: calc(100vw - 2rem);
-        }
-        
-        .modal-view {
-            bottom: 1rem;
-            left: 1rem;
-            width: 24rem;
-            border: 2px solid #86efac;
-            padding-bottom: 0;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.25rem;
-            color: #9ca3af;
-            font-size: 1.5rem;
-        }
-        
-        .close-btn:hover {
-            background: #f3f4f6;
-            border-radius: 0.25rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
-        
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-family: inherit;
-        }
-        
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #dc2626;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-        }
-        
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .icon-btn {
-            font-size: 2.5rem;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            background: #f9fafb;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .icon-btn:hover {
-            border-color: #fca5a5;
-            transform: scale(1.1);
-        }
-        
-        .icon-btn.selected {
-            background: #fee2e2;
-            border-color: #dc2626;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        
-        .success-box {
-            background: #dcfce7;
-            border: 1px solid #bbf7d0;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-        }
-        
-        .error-box {
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .success-text {
-            font-size: 0.875rem;
-            color: #166534;
-            font-weight: 500;
-        }
-        
-        .error-text {
-            font-size: 0.875rem;
-            color: #991b1b;
-        }
-        
-        .hint-text {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
-        }
-        
-        .pin-detail {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-        
-        .divider {
-            border-top: 1px solid #e5e7eb;
-            margin: 0.75rem 0;
-            padding-top: 0.75rem;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .icon-delete {
-            color: #dc2626;
-            background: none;
-            border: none;
-            padding: 0.5rem;
-            cursor: pointer;
-            border-radius: 0.5rem;
-            transition: background 0.2s;
-            font-size: 1.25rem;
-        }
-        
-        .icon-delete:hover {
-            background: #fee2e2;
-        }
-        
-        #loading {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        
-        .spinner {
-            width: 3rem;
-            height: 3rem;
-            border: 4px solid #dc2626;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .submit-btn-container {
-            background: white;
-            padding-top: 1rem;
-            margin-top: 1rem;
-            border-top: 2px solid #e5e7eb;
-        }
-        
-        @media (max-width: 640px) {
-            #header h1 {
-                font-size: 1.25rem;
-            }
-            
-            #header p {
-                font-size: 0.75rem;
-            }
-            
-            .modal-add {
-                width: calc(100vw - 2rem);
-                left: 1rem;
-                right: 1rem;
-                max-height: calc(100vh - 160px);
-                top: 0.5rem;
-                padding-bottom: 5rem;
-            }
-            
-            .modal-view {
-                width: calc(100vw - 2rem);
-                left: 1rem;
-                right: 1rem;
-                bottom: 0.5rem;
-                max-height: calc(100vh - 160px);
-                padding-bottom: 0;
-            }
-            
-            #delete-form {
-                padding-bottom: 5rem;
-            }
-            
-            .delete-btn-container {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1rem;
-                background: white;
-                border-top: 2px solid #dc2626;
-                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
-                z-index: 10001;
-            }
-            
-            #add-btn {
-                top: 0.5rem !important;
-                right: 0.5rem !important;
-                padding: 0.5rem 1rem !important;
-                font-size: 0.875rem !important;
-            }
-            
-            .form-input, .form-textarea {
-                font-size: 16px !important;
-            }
-            
-            .form-group {
-                margin-bottom: 0.75rem;
-            }
-            
-            .submit-btn-container {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1rem;
-                background: white;
-                border-top: 2px solid #dc2626;
-                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
-                z-index: 10001;
-            }
-            
-            .submit-btn-container .btn {
-                width: 100%;
-                padding: 1rem;
-                font-size: 1rem;
-                font-weight: bold;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colindători Bine Veniți - Cartier Tineri Buftea</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+/* ------------------- Stil general ------------------- */
+* {margin:0;padding:0;box-sizing:border-box;}
+body {font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; height:100vh; overflow:hidden;}
+#header {background: linear-gradient(to right, #dc2626, #16a34a); color:white; padding:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+#header-content {max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;}
+#header-title {display:flex; align-items:center; gap:0.75rem;}
+#header h1 {font-size:1.5rem; font-weight:bold;}
+#header p {font-size:0.875rem; opacity:0.9;}
+#pin-count {background: rgba(255,255,255,0.2); padding:0.5rem 1rem; border-radius:9999px; font-weight:600;}
+#instructions {background: #fef3c7; border-bottom:2px solid #fcd34d; padding:0.75rem 1rem;}
+#instructions-content {max-width:1280px; margin:0 auto; display:flex; gap:0.75rem; font-size:0.875rem; color:#92400e;}
+#map-container {position: relative; height: calc(100vh - 140px);}
+#map {width:100%; height:100%;}
+.btn {padding:0.75rem 1.5rem; border:none; border-radius:9999px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; transition:all 0.2s;}
+.btn-primary {background:linear-gradient(to right, #dc2626, #16a34a); color:white; box-shadow:0 10px 15px -3px rgba(0,0,0,0.2);}
+.btn-primary:hover {transform:scale(1.05); box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);}
+.btn-danger {background:#dc2626;color:white;}
+.btn-danger:hover {background:#b91c1c;}
+.btn-secondary {background:#e5e7eb;color:#374151;}
+.btn-secondary:hover {background:#d1d5db;}
+.modal {position:absolute; background:white; border-radius:0.5rem; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2); padding:1.5rem; z-index:9999; max-height:calc(100vh - 180px); overflow-y:auto;}
+.modal-add {top:1rem; right:1rem; width:24rem; border:2px solid #fca5a5; max-width:calc(100vw - 2rem);}
+.modal-view {bottom:1rem; left:1rem; width:24rem; border:2px solid #86efac; padding-bottom:0;}
+.modal-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;}
+.modal-title {font-size:1.25rem; font-weight:bold; color:#1f2937; display:flex; align-items:center; gap:0.5rem;}
+.close-btn {background:none; border:none; cursor:pointer; padding:0.25rem; color:#9ca3af; font-size:1.5rem;}
+.close-btn:hover {background:#f3f4f6; border-radius:0.25rem;}
+.form-group {margin-bottom:1rem;}
+.form-label {display:block; font-size:0.875rem; font-weight:500; color:#374151; margin-bottom:0.25rem;}
+.form-input, .form-textarea {width:100%; padding:0.5rem 0.75rem; border:1px solid #d1d5db; border-radius:0.5rem; font-size:0.875rem; font-family:inherit;}
+.form-input:focus, .form-textarea:focus {outline:none; border-color:#dc2626; box-shadow:0 0 0 3px rgba(220,38,38,0.1);}
+.icon-grid {display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; margin-top:0.5rem;}
+.icon-btn {font-size:2.5rem; padding:0.75rem; border:2px solid #e5e7eb; background:#f9fafb; border-radius:0.5rem; cursor:pointer; transition:all 0.2s;}
+.icon-btn:hover {border-color:#fca5a5; transform:scale(1.1);}
+.icon-btn.selected {background:#fee2e2; border-color:#dc2626; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);}
+.success-box {background:#dcfce7; border:1px solid #bbf7d0; border-radius:0.5rem; padding:0.75rem; margin-bottom:1rem;}
+.error-box {background:#fee2e2; border:1px solid #fca5a5; border-radius:0.5rem; padding:1rem; margin-bottom:1rem;}
+.success-text {font-size:0.875rem; color:#166534; font-weight:500;}
+.error-text {font-size:0.875rem; color:#991b1b;}
+.hint-text {font-size:0.75rem; color:#6b7280; margin-top:0.25rem;}
+.pin-detail {display:flex; align-items:center; gap:0.5rem; color:#374151; margin-bottom:0.5rem;}
+.divider {border-top:1px solid #e5e7eb; margin:0.75rem 0; padding-top:0.75rem;}
+.action-buttons {display:flex; gap:0.5rem;}
+.icon-delete {color:#dc2626; background:none; border:none; padding:0.5rem; cursor:pointer; border-radius:0.5rem; transition:background 0.2s; font-size:1.25rem;}
+.icon-delete:hover {background:#fee2e2;}
+#loading {position:absolute; inset:0; background:rgba(255,255,255,0.9); display:flex; align-items:center; justify-content:center; z-index:9999;}
+.spinner {width:3rem; height:3rem; border:4px solid #dc2626; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite;}
+@keyframes spin {to {transform:rotate(360deg);}}
+.hidden {display:none !important;}
+.submit-btn-container {background:white; padding-top:1rem; margin-top:1rem; border-top:2px solid #e5e7eb;}
+/* ------------------- Mobil ------------------- */
+@media(max-width:640px){
+    #add-modal {width:calc(100vw - 2rem); left:1rem; right:1rem; max-height:calc(100vh - 160px); top:0.5rem; padding-bottom:5rem;}
+    #view-modal {width:calc(100vw - 2rem); left:1rem; right:1rem; bottom:0.5rem; max-height:calc(100vh - 160px); padding-bottom:0;}
+    #delete-form {position:fixed; bottom:0; left:0; right:0; background:white; border-top:2px solid #dc2626; z-index:10002; max-height:50%; overflow-y:auto; padding:1rem; box-shadow:0 -4px 6px rgba(0,0,0,0.1); border-radius:0.5rem 0.5rem 0 0;}
+    #delete-form input {margin-bottom:0.5rem;}
+    #view-content, #delete-form {-webkit-overflow-scrolling:touch;}
+}
+</style>
 </head>
 <body>
-    <div id="header">
-        <div id="header-content">
-            <div id="header-title">
-                <span style="font-size: 2rem;">📍</span>
-                <div>
-                    <h1>Colindători Bine Veniți 🎄</h1>
-                    <p>Cartier Tineri, Buftea - Click pe hartă să adaugi casa!</p>
-                </div>
-            </div>
-            <div id="pin-count">
-                <span id="pin-count-text">0 case</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="instructions">
-        <div id="instructions-content">
-            <span>⚠️</span>
+<div id="header">
+    <div id="header-content">
+        <div id="header-title">
+            <span style="font-size:2rem;">📍</span>
             <div>
-                <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Completează formularul → Apasă "Adaugă pe Hartă"
+                <h1>Colindători Bine Veniți 🎄</h1>
+                <p>Cartier Tineri, Buftea - Click pe hartă să adaugi casa!</p>
             </div>
         </div>
+        <div id="pin-count">
+            <span id="pin-count-text">0 case</span>
+        </div>
     </div>
-
-    <div id="map-container">
-        <div id="map"></div>
-        
-        <button id="add-btn" class="btn btn-primary" style="position: absolute; top: 1rem; right: 1rem; z-index: 9999;">
-            <span style="font-size: 1.25rem;">+</span>
-            Adaugă Casa Mea
-        </button>
-        
-        <div id="add-modal" class="modal modal-add hidden">
+</div>
+<div id="instructions">
+    <div id="instructions-content">
+        <span>⚠️</span>
+        <div>
+            <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Completează formularul → Apasă "Adaugă pe Hartă"
+        </div>
+    </div>
+</div>
+<div id="map-container">
+    <div id="map"></div>
+    <button id="add-btn" class="btn btn-primary" style="position:absolute; top:1rem; right:1rem; z-index:9999;"><span style="font-size:1.25rem;">+</span> Adaugă Casa Mea</button>
+    <div id="add-modal" class="modal modal-add hidden">
+        <div class="modal-header">
+            <h3 class="modal-title"><span style="font-size:1.5rem;">+</span> Adaugă Casa Ta</h3>
+            <button class="close-btn" onclick="closeAddModal()">×</button>
+        </div>
+        <div id="location-success" class="success-box hidden">
+            <p class="success-text">✓ Locație selectată</p>
+            <p class="hint-text">Click pe hartă pentru a schimba locația exactă</p>
+        </div>
+        <div id="error-message" class="error-box hidden">
+            <div style="display:flex; gap:0.5rem;">
+                <span style="font-size:1.25rem;">❌</span>
+                <div style="flex:1;">
+                    <p class="error-text" style="font-weight:600; margin-bottom:0.25rem;">Eroare</p>
+                    <p class="error-text" id="error-text" style="white-space:pre-line;"></p>
+                </div>
+            </div>
+            <button onclick="closeError()" style="margin-top:0.5rem; font-size:0.75rem; color:#991b1b; background:none; border:none; cursor:pointer; font-weight:500;">Închide</button>
+        </div>
+        <form id="add-form" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label class="form-label">Alege iconița ta de Crăciun 🎅</label>
+                <div class="icon-grid" id="icon-grid"></div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">👤 Nume Familie *</label>
+                <input type="text" class="form-input" id="name" placeholder="Numele familiei">
+            </div>
+            <div class="form-group">
+                <label class="form-label">🏠 Denumire Stradă *</label>
+                <input type="text" class="form-input" id="address" placeholder="Denumire stradă">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Număr Poștal *</label>
+                <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal">
+            </div>
+            <div class="form-group">
+                <label class="form-label">🕐 Program preferat</label>
+                <input type="text" class="form-input" id="schedule" placeholder="Ex: 24 dec, 18:00-21:00">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Detalii suplimentare</label>
+                <textarea class="form-textarea" id="notes" rows="3" placeholder="Ex: Sunați la interfon, poartă verde"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Parolă pentru ștergere (opțional)</label>
+                <input type="password" class="form-input" id="password" placeholder="Setează o parolă">
+                <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
+            </div>
+            <div style="height:120px;"></div>
+            <div class="submit-btn-container">
+                <button type="submit" class="btn btn-primary" style="width:100%;">Adaugă pe Hartă</button>
+            </div>
+        </form>
+    </div>
+    <div id="view-modal" class="modal modal-view hidden">
+        <div id="view-content"></div>
+        <div id="delete-form" class="hidden">
             <div class="modal-header">
-                <h3 class="modal-title">
-                    <span style="font-size: 1.5rem;">+</span>
-                    Adaugă Casa Ta
-                </h3>
-                <button class="close-btn" onclick="closeAddModal()">×</button>
+                <h3 class="modal-title" style="color:#dc2626;">Șterge Pin</h3>
+                <button class="close-btn" onclick="closeDeleteForm()">×</button>
             </div>
-            
-            <div id="location-success" class="success-box hidden">
-                <p class="success-text">✓ Locație selectată</p>
-                <p class="hint-text">Click pe hartă pentru a schimba locația exactă</p>
+            <div class="form-group">
+                <label class="form-label">Introdu parola:</label>
+                <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere">
+                <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
             </div>
-            
-            <div id="error-message" class="error-box hidden">
-                <div style="display: flex; gap: 0.5rem;">
-                    <span style="font-size: 1.25rem;">❌</span>
-                    <div style="flex: 1;">
-                        <p class="error-text" style="font-weight: 600; margin-bottom: 0.25rem;">Eroare</p>
-                        <p class="error-text" id="error-text" style="white-space: pre-line;"></p>
-                    </div>
+            <div style="height:80px;"></div>
+            <div style="padding-top:1rem; border-top:2px solid #e5e7eb;">
+                <div class="action-buttons">
+                    <button onclick="confirmDelete()" class="btn btn-danger" style="flex:1;">Șterge Pin</button>
+                    <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex:1;">Anulează</button>
                 </div>
-                <button onclick="closeError()" style="margin-top: 0.5rem; font-size: 0.75rem; color: #991b1b; background: none; border: none; cursor: pointer; font-weight: 500;">
-                    Închide
-                </button>
-            </div>
-            
-            <form id="add-form" onsubmit="handleSubmit(event)">
-                <div class="form-group">
-                    <label class="form-label">Alege iconița ta de Crăciun 🎅</label>
-                    <div class="icon-grid" id="icon-grid"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">👤 Nume Familie *</label>
-                    <input type="text" class="form-input" id="name" placeholder="Numele familiei">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">🏠 Denumire Stradă *</label>
-                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Număr Poștal *</label>
-                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">🕐 Program preferat</label>
-                    <input type="text" class="form-input" id="schedule" placeholder="Ex: 24 dec, 18:00-21:00">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Detalii suplimentare</label>
-                    <textarea class="form-textarea" id="notes" rows="3" placeholder="Ex: Sunați la interfon, poartă verde"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Parolă pentru ștergere (opțional)</label>
-                    <input type="password" class="form-input" id="password" placeholder="Setează o parolă">
-                    <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
-                </div>
-                
-                <!-- Spacer pentru a putea face scroll -->
-                <div style="height: 120px;"></div>
-                
-                <div class="submit-btn-container">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        Adaugă pe Hartă
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <div id="view-modal" class="modal modal-view hidden">
-            <div id="view-content"></div>
-            <div id="delete-form" class="hidden">
-                <div class="modal-header">
-                    <h3 class="modal-title" style="color: #dc2626;">Șterge Pin</h3>
-                    <button class="close-btn" onclick="closeDeleteForm()">×</button>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Introdu parola:</label>
-                    <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere">
-                    <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
-                </div>
-                
-                <!-- Spacer pentru a putea face scroll pe mobil -->
-                <div style="height: 80px;"></div>
-                
-                <div style="padding-top: 1rem; border-top: 2px solid #e5e7eb;">
-                    <div class="action-buttons">
-                        <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
-                            Șterge Pin
-                        </button>
-                        <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
-                            Anulează
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="loading">
-            <div style="text-align: center;">
-                <div class="spinner"></div>
-                <p style="margin-top: 1rem; color: #6b7280; font-weight: 500;">Se încarcă harta...</p>
             </div>
         </div>
     </div>
+    <div id="loading">
+        <div style="text-align:center;">
+            <div class="spinner"></div>
+            <p style="margin-top:1rem; color:#6b7280; font-weight:500;">Se încarcă harta...</p>
+        </div>
+    </div>
+</div>
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD4j5pOuXalnS-TErmivkJEa-4ki5e_x6s",
-            authDomain: "colindatori-buftea.firebaseapp.com",
-            databaseURL: "https://colindatori-buftea-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "colindatori-buftea",
-            storageBucket: "colindatori-buftea.firebasestorage.app",
-            messagingSenderId: "386078081254",
-            appId: "1:386078081254:web:8625f492e1a110fa257b27"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        
-        const ADMIN_PASSWORD = 'colind2025';
-        const ICONS = ['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'];
-        
-        let map;
-        let markers = [];
-        let pins = [];
-        let selectedIcon = '🎄';
-        let clickedLocation = null;
-        let selectedPin = null;
-        
-        document.addEventListener('DOMContentLoaded', init);
-        
-        function init() {
-            initMap();
-            initIconGrid();
-            loadPins();
-            
-            document.getElementById('add-btn').addEventListener('click', openAddModal);
-        }
-        
-        function initMap() {
-            map = L.map('map').setView([44.545593, 25.931531], 17);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-            
-            map.on('click', (e) => {
-                clickedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
-                
-                // Add temporary marker at clicked location
-                if (window.tempMarker) {
-                    window.tempMarker.remove();
-                }
-                
-                window.tempMarker = L.marker([e.latlng.lat, e.latlng.lng], {
-                    icon: L.divIcon({
-                        html: '<div style="font-size: 48px; animation: pulse 1s infinite;">📍</div><style>@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); }}</style>',
-                        className: 'temp-marker',
-                        iconSize: [48, 48],
-                        iconAnchor: [24, 48]
-                    })
-                }).addTo(map);
-                
-                // Update location in form if it's open
-                if (!document.getElementById('add-modal').classList.contains('hidden')) {
-                    document.getElementById('location-success').classList.remove('hidden');
-                }
-            });
-            
-            setTimeout(() => {
-                map.invalidateSize();
-                document.getElementById('loading').classList.add('hidden');
-            }, 100);
-        }
-        
-        function initIconGrid() {
-            const grid = document.getElementById('icon-grid');
-            grid.innerHTML = '';
-            ICONS.forEach(icon => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'icon-btn';
-                btn.textContent = icon;
-                btn.onclick = () => selectIcon(icon);
-                if (icon === selectedIcon) btn.classList.add('selected');
-                grid.appendChild(btn);
-            });
-        }
-        
-        function selectIcon(icon) {
-            selectedIcon = icon;
-            document.querySelectorAll('.icon-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.textContent === icon);
-            });
-        }
-        
-        function loadPins() {
-            database.ref('pins').on('value', (snapshot) => {
-                pins = [];
-                snapshot.forEach((child) => {
-                    pins.push({ id: child.key, ...child.val() });
-                });
-                updateMap();
-                updatePinCount();
-            });
-        }
-        
-        function updateMap() {
-            markers.forEach(marker => marker.remove());
-            markers = [];
-            
-            pins.forEach(pin => {
-                const icon = pin.icon || '🎄';
-                const marker = L.marker([pin.lat, pin.lng], {
-                    icon: L.divIcon({
-                        html: `<div style="font-size: 42px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)); transform: translateY(-5px);">${icon}</div>`,
-                        className: 'custom-marker',
-                        iconSize: [42, 42],
-                        iconAnchor: [21, 42]
-                    })
-                }).addTo(map);
-                
-                marker.on('click', () => showPin(pin));
-                markers.push(marker);
-            });
-        }
-        
-        function updatePinCount() {
-            const count = pins.length;
-            const text = count === 1 ? 'casă' : 'case';
-            document.getElementById('pin-count-text').textContent = `${count} ${text}`;
-        }
-        
-        function showError(message) {
-            document.getElementById('error-text').textContent = message;
-            document.getElementById('error-message').classList.remove('hidden');
-        }
-        
-        function closeError() {
-            document.getElementById('error-message').classList.add('hidden');
-        }
-        
-        function openAddModal() {
-            if (!clickedLocation) {
-                alert('⚠️ Mai întâi dă click pe hartă unde vrei să adaugi casa!');
-                return;
-            }
-            document.getElementById('add-modal').classList.remove('hidden');
-            document.getElementById('location-success').classList.remove('hidden');
-            document.getElementById('view-modal').classList.add('hidden');
-        }
-        
-        function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
-            document.getElementById('add-form').reset();
-            document.getElementById('error-message').classList.add('hidden');
-            clickedLocation = null;
-            selectedIcon = '🎄';
-            initIconGrid();
-            
-            // Remove temporary marker
-            if (window.tempMarker) {
-                window.tempMarker.remove();
-                window.tempMarker = null;
-            }
-        }
-        
-        function handleSubmit(e) {
-            e.preventDefault();
-            
-            closeError();
-            
-            const name = document.getElementById('name').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const streetNumber = document.getElementById('streetNumber').value.trim();
-            
-            const missingFields = [];
-            if (!name) missingFields.push('Nume Familie');
-            if (!address) missingFields.push('Denumire Stradă');
-            if (!streetNumber) missingFields.push('Număr Poștal');
-            
-            if (missingFields.length > 0) {
-                showError('Te rog completează următoarele câmpuri obligatorii:\n\n• ' + missingFields.join('\n• '));
-                return;
-            }
-            
-            if (!clickedLocation) {
-                showError('Te rog selectează o locație pe hartă!');
-                return;
-            }
-            
-            const pinData = {
-                name,
-                address,
-                streetNumber,
-                schedule: document.getElementById('schedule').value,
-                notes: document.getElementById('notes').value,
-                icon: selectedIcon,
-                password: document.getElementById('password').value,
-                lat: clickedLocation.lat,
-                lng: clickedLocation.lng,
-                timestamp: new Date().toISOString()
-            };
-            
-            database.ref('pins').push(pinData)
-                .then(() => {
-                    closeAddModal();
-                    
-                    // Remove temporary marker
-                    if (window.tempMarker) {
-                        window.tempMarker.remove();
-                        window.tempMarker = null;
-                    }
-                    
-                    alert('✅ Casă adăugată cu succes!');
-                })
-                .catch((error) => {
-                    console.error('Save error:', error);
-                    showError('Eroare la salvare: ' + error.message);
-                });
-        }
-        
-        function showPin(pin) {
-            selectedPin = pin;
-            const addressText = `Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-            
-            let html = `
-                <div class="modal-header">
-                    <div>
-                        <h3 class="modal-title">${pin.name}</h3>
-                        <p class="pin-detail">
-                            <span>🏠</span>
-                            ${addressText}
-                        </p>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="icon-delete" onclick="showDeleteForm()">🗑️</button>
-                        <button class="close-btn" onclick="closeViewModal()">×</button>
-                    </div>
-                </div>
-            `;
-            
-            if (pin.schedule) {
-                html += `<p class="pin-detail"><span>🕐</span><span style="font-weight: 500;">${pin.schedule}</span></p>`;
-            }
-            
-            if (pin.notes) {
-                html += `<div class="divider"><p style="font-size: 0.875rem; color: #6b7280;">${pin.notes}</p></div>`;
-            }
-            
-            document.getElementById('view-content').innerHTML = html;
-            document.getElementById('view-modal').classList.remove('hidden');
-            document.getElementById('delete-form').classList.add('hidden');
-            document.getElementById('add-modal').classList.add('hidden');
-        }
-        
-        function closeViewModal() {
-            document.getElementById('view-modal').classList.add('hidden');
-            selectedPin = null;
-        }
-        
-        function showDeleteForm() {
-            document.getElementById('view-content').classList.add('hidden');
-            document.getElementById('delete-form').classList.remove('hidden');
-        }
-        
-        function closeDeleteForm() {
-            document.getElementById('view-content').classList.remove('hidden');
-            document.getElementById('delete-form').classList.add('hidden');
-            document.getElementById('delete-password').value = '';
-        }
-        
-        function confirmDelete() {
-            if (!selectedPin) return;
-            
-            const password = document.getElementById('delete-password').value;
-            
-            if (!password) {
-                alert('Te rog introdu parola!');
-                return;
-            }
-            
-            const isAdmin = password === ADMIN_PASSWORD;
-            const isOwner = selectedPin.password && password === selectedPin.password;
-            
-            if (!isAdmin && !isOwner) {
-                alert('❌ Parolă incorectă!');
-                document.getElementById('delete-password').value = '';
-                return;
-            }
-            
-            database.ref('pins/' + selectedPin.id).remove()
-                .then(() => {
-                    closeViewModal();
-                    alert('✅ Pin șters cu succes!');
-                })
-                .catch((error) => {
-                    console.error('Delete error:', error);
-                    alert('Eroare la ștergere: ' + error.message);
-                });
-        }
-    </script>
+<script>
+// Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyD4j5pOuXalnS-TErmivkJEa-4ki5e_x6s",
+    authDomain: "colindatori-buftea.firebaseapp.com",
+    databaseURL: "https://colindatori-buftea-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "colindatori-buftea",
+    storageBucket: "colindatori-buftea.firebasestorage.app",
+    messagingSenderId: "386078081254",
+    appId: "1:386078081254:web:8625f492e1a110fa257b27"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+const ADMIN_PASSWORD = 'colind2025';
+const ICONS = ['🎄','🍬','🎅','⭐','🔔','🎁','❄️','🕯️'];
+let map, markers=[], pins=[], selectedIcon='🎄', clickedLocation=null, selectedPin=null;
+
+document.addEventListener('DOMContentLoaded', init);
+
+function init() {
+    initMap(); initIconGrid(); loadPins();
+    document.getElementById('add-btn').addEventListener('click', openAddModal);
+}
+
+function initMap() {
+    map = L.map('map').setView([44.545593,25.931531],17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors', maxZoom:19}).addTo(map);
+    map.on('click', e=>{
+        clickedLocation={lat:e.latlng.lat,lng:e.latlng.lng};
+        if(window.tempMarker) window.tempMarker.remove();
+        window.tempMarker=L.marker([e.latlng.lat,e.latlng.lng],{icon:L.divIcon({html:'<div style="font-size:48px; animation:pulse 1s infinite;">📍</div><style>@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}</style>',className:'temp-marker',iconSize:[48,48],iconAnchor:[24,48]})}).addTo(map);
+        if(!document.getElementById('add-modal').classList.contains('hidden')) document.getElementById('location-success').classList.remove('hidden');
+    });
+    setTimeout(()=>{map.invalidateSize(); document.getElementById('loading').classList.add('hidden');},100);
+}
+
+function initIconGrid(){const grid=document.getElementById('icon-grid');grid.innerHTML='';ICONS.forEach(icon=>{const btn=document.createElement('button');btn.type='button';btn.className='icon-btn';btn.textContent=icon;btn.onclick=()=>selectIcon(icon);if(icon===selectedIcon)btn.classList.add('selected');grid.appendChild(btn);});}
+function selectIcon(icon){selectedIcon=icon; document.querySelectorAll('.icon-btn').forEach(btn=>{btn.classList.toggle('selected',btn.textContent===icon);});}
+
+function loadPins(){
+    database.ref('pins').on('value', snapshot=>{
+        pins=[]; snapshot.forEach(child=>{pins.push({id:child.key, ...child.val()});});
+        updateMap(); updatePinCount();
+    });
+}
+
+function updateMap(){
+    markers.forEach(marker=>marker.remove()); markers=[];
+    pins.forEach(pin=>{
+        const icon = pin.icon||'🎄';
+        const marker=L.marker([pin.lat,pin.lng],{icon:L.divIcon({html:`<div style="font-size:42px; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.4)); transform:translateY(-5px);">${icon}</div>`,className:'custom-marker',iconSize:[42,42],iconAnchor:[21,42]})}).addTo(map);
+        marker.on('click',()=>showPin(pin));
+        markers.push(marker);
+    });
+}
+
+function updatePinCount(){const count=pins.length; const text=count===1?'casă':'case'; document.getElementById('pin-count-text').textContent=`${count} ${text}`;}
+
+function showError(message){document.getElementById('error-text').textContent=message; document.getElementById('error-message').classList.remove('hidden');}
+function closeError(){document.getElementById('error-message').classList.add('hidden');}
+
+function openAddModal(){if(!clickedLocation){alert('⚠️ Mai întâi dă click pe hartă unde vrei să adaugi casa!'); return;} document.getElementById('add-modal').classList.remove('hidden'); document.getElementById('location-success').classList.remove('hidden'); document.getElementById('view-modal').classList.add('hidden');}
+function closeAddModal(){document.getElementById('add-modal').classList.add('hidden'); document.getElementById('add-form').reset(); document.getElementById('error-message').classList.add('hidden'); clickedLocation=null; selectedIcon='🎄'; initIconGrid(); if(window.tempMarker){window.tempMarker.remove(); window.tempMarker=null;}}
+
+function handleSubmit(e){
+    e.preventDefault(); closeError();
+    const name=document.getElementById('name').value.trim();
+    const address=document.getElementById('address').value.trim();
+    const streetNumber=document.getElementById('streetNumber').value.trim();
+    const missingFields=[]; if(!name) missingFields.push('Nume Familie'); if(!address) missingFields.push('Denumire Stradă'); if(!streetNumber) missingFields.push('Număr Poștal');
+    if(missingFields.length>0){showError('Te rog completează următoarele câmpuri obligatorii:\n\n• '+missingFields.join('\n• ')); return;}
+    if(!clickedLocation){showError('Te rog selectează o locație pe hartă!'); return;}
+    const pinData={name,address,streetNumber,schedule:document.getElementById('schedule').value,notes:document.getElementById('notes').value,icon:selectedIcon,password:document.getElementById('password').value,lat:clickedLocation.lat,lng:clickedLocation.lng,timestamp:new Date().toISOString()};
+    database.ref('pins').push(pinData).then(()=>{closeAddModal(); if(window.tempMarker){window.tempMarker.remove(); window.tempMarker=null;} alert('✅ Casă adăugată cu succes!');}).catch(error=>{console.error('Save error:',error); showError('Eroare la salvare: '+error.message);});
+}
+
+function showPin(pin){
+    selectedPin=pin;
+    const addressText=`Str. ${pin.address}, Nr. ${pin.streetNumber}`;
+    let html=`<div class="modal-header"><div><h3 class="modal-title">${pin.name}</h3><p class="pin-detail"><span>🏠</span>${addressText}</p></div><div style="display:flex; gap:0.5rem;"><button class="icon-delete" onclick="showDeleteForm()">🗑️</button><button class="close-btn" onclick="closeViewModal()">×</button></div></div>`;
+    if(pin.schedule) html+=`<p class="pin-detail"><span>🕐</span>${pin.schedule}</p>`;
+    if(pin.notes) html+=`<div class="divider"><p style="font-size:0.875rem;color:#6b7280;">${pin.notes}</p></div>`;
+    document.getElementById('view-content').innerHTML=html;
+    document.getElementById('view-modal').classList.remove('hidden'); document.getElementById('delete-form').classList.add('hidden'); document.getElementById('view-content').classList.remove('hidden'); document.getElementById('add-modal').classList.add('hidden');
+}
+
+function closeViewModal(){document.getElementById('view-modal').classList.add('hidden'); selectedPin=null;}
+function showDeleteForm(){document.getElementById('view-content').classList.add('hidden'); document.getElementById('delete-form').classList.remove('hidden');}
+function closeDeleteForm(){document.getElementById('view-content').classList.remove('hidden'); document.getElementById('delete-form').classList.add('hidden'); document.getElementById('delete-password').value='';}
+
+function confirmDelete(){
+    if(!selectedPin) return;
+    const password=document.getElementById('delete-password').value;
+    if(!password){alert('Te rog introdu parola!'); return;}
+    const isAdmin=password===ADMIN_PASSWORD;
+    const isOwner=selectedPin.password&&password===selectedPin.password;
+    if(!isAdmin&&!isOwner){alert('❌ Parolă incorectă!'); document.getElementById('delete-password').value=''; return;}
+    database.ref('pins/'+selectedPin.id).remove().then(()=>{closeViewModal(); alert('✅ Pin șters cu succes!');}).catch(error=>{console.error('Delete error:',error); alert('Eroare la ștergere: '+error.message);});
+}
+</script>
 </body>
 </html>
