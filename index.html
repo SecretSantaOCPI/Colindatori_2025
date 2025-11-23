@@ -1,873 +1,563 @@
-<!DOCTYPE html>
-<html lang="ro">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colindători Bine Veniți - Cartier Tineri Buftea</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        #header {
-            background: linear-gradient(to right, #dc2626, #16a34a);
-            color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        #header-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        #header-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        #header h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        #header p {
-            font-size: 0.875rem;
-            opacity: 0.9;
-        }
-        
-        #pin-count {
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 600;
-        }
-        
-        #instructions {
-            background: #fef3c7;
-            border-bottom: 2px solid #fcd34d;
-            padding: 0.75rem 1rem;
-        }
-        
-        #instructions-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            gap: 0.75rem;
-            font-size: 0.875rem;
-            color: #92400e;
-        }
-        
-        #map-container {
-            position: relative;
-            height: calc(100vh - 140px);
-        }
-        
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 9999px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(to right, #dc2626, #16a34a);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-        }
-        
-        .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-        }
-        
-        .btn-secondary:hover {
-            background: #d1d5db;
-        }
-        
-        .modal {
-            position: absolute;
-            background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
-            padding: 1.5rem;
-            z-index: 9999;
-            max-height: calc(100vh - 180px);
-            overflow-y: auto;
-        }
-        
-        .modal-add {
-            top: 1rem;
-            right: 1rem;
-            width: 24rem;
-            border: 2px solid #fca5a5;
-            max-width: calc(100vw - 2rem);
-        }
-        
-        .modal-view {
-            bottom: 1rem;
-            left: 1rem;
-            width: 24rem;
-            border: 2px solid #86efac;
-            padding-bottom: 0;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.25rem;
-            color: #9ca3af;
-            font-size: 1.5rem;
-        }
-        
-        .close-btn:hover {
-            background: #f3f4f6;
-            border-radius: 0.25rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
-        
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-family: inherit;
-        }
-        
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #dc2626;
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-        }
-        
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .icon-btn {
-            font-size: 2.5rem;
-            padding: 0.75rem;
-            border: 2px solid #e5e7eb;
-            background: #f9fafb;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .icon-btn:hover {
-            border-color: #fca5a5;
-            transform: scale(1.1);
-        }
-        
-        .icon-btn.selected {
-            background: #fee2e2;
-            border-color: #dc2626;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        
-        .success-box {
-            background: #dcfce7;
-            border: 1px solid #bbf7d0;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-        }
-        
-        .error-box {
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .success-text {
-            font-size: 0.875rem;
-            color: #166534;
-            font-weight: 500;
-        }
-        
-        .error-text {
-            font-size: 0.875rem;
-            color: #991b1b;
-        }
-        
-        .hint-text {
-            font-size: 0.75rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
-        }
-        
-        .pin-detail {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #374151;
-            margin-bottom: 0.5rem;
-        }
-        
-        .divider {
-            border-top: 1px solid #e5e7eb;
-            margin: 0.75rem 0;
-            padding-top: 0.75rem;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .icon-delete {
-            color: #dc2626;
-            background: none;
-            border: none;
-            padding: 0.5rem;
-            cursor: pointer;
-            border-radius: 0.5rem;
-            transition: background 0.2s;
-            font-size: 1.25rem;
-        }
-        
-        .icon-delete:hover {
-            background: #fee2e2;
-        }
-        
-        #loading {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        
-        .spinner {
-            width: 3rem;
-            height: 3rem;
-            border: 4px solid #dc2626;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .submit-btn-container {
-            background: white;
-            padding-top: 1rem;
-            margin-top: 1rem;
-            border-top: 2px solid #e5e7eb;
-        }
-        
-        @media (max-width: 640px) {
-            #header h1 {
-                font-size: 1.25rem;
-            }
-            
-            #header p {
-                font-size: 0.75rem;
-            }
-            
-            .modal-add {
-                width: calc(100vw - 2rem);
-                left: 1rem;
-                right: 1rem;
-                max-height: calc(100vh - 160px);
-                top: 0.5rem;
-                padding-bottom: 5rem;
-            }
-            
-            .modal-view {
-                width: calc(100vw - 2rem);
-                left: 1rem;
-                right: 1rem;
-                bottom: 0.5rem;
-                max-height: calc(100vh - 160px);
-                padding-bottom: 0;
-            }
-            
-            #delete-form {
-                padding-bottom: 5rem;
-            }
-            
-            .delete-btn-container {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1rem;
-                background: white;
-                border-top: 2px solid #dc2626;
-                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
-                z-index: 10001;
-            }
-            
-            #add-btn {
-                top: 0.5rem !important;
-                right: 0.5rem !important;
-                padding: 0.5rem 1rem !important;
-                font-size: 0.875rem !important;
-            }
-            
-            .form-input, .form-textarea {
-                font-size: 16px !important;
-            }
-            
-            .form-group {
-                margin-bottom: 0.75rem;
-            }
-            
-            .submit-btn-container {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1rem;
-                background: white;
-                border-top: 2px solid #dc2626;
-                box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.2);
-                z-index: 10001;
-            }
-            
-            .submit-btn-container .btn {
-                width: 100%;
-                padding: 1rem;
-                font-size: 1rem;
-                font-weight: bold;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div id="header">
-        <div id="header-content">
-            <div id="header-title">
-                <span style="font-size: 2rem;">📍</span>
-                <div>
-                    <h1>Colindători Bine Veniți 🎄</h1>
-                    <p>Cartier Tineri, Buftea - Click pe hartă să adaugi casa!</p>
-                </div>
-            </div>
-            <div id="pin-count">
-                <span id="pin-count-text">0 case</span>
-            </div>
-        </div>
-    </div>
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, Plus, X, Home, Clock, User, Trash2, AlertCircle } from 'lucide-react';
 
-    <div id="instructions">
-        <div id="instructions-content">
-            <span>⚠️</span>
+export default function ColindMap() {
+  const [pins, setPins] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [clickedLocation, setClickedLocation] = useState(null);
+  const [newPin, setNewPin] = useState({
+    name: '',
+    address: '',
+    streetNumber: '',
+    schedule: '',
+    notes: '',
+    icon: '🎄',
+    password: ''
+  });
+  const [selectedPin, setSelectedPin] = useState(null);
+  const [showDeleteForm, setShowDeleteForm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [mapReady, setMapReady] = useState(false);
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+
+  useEffect(() => {
+    loadPins();
+  }, []);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css';
+    document.head.appendChild(link);
+
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js';
+    script.onload = () => {
+      const L = window.L;
+      
+      const map = L.map(mapRef.current, {
+        center: [44.545593, 25.931531],
+        zoom: 17,
+        zoomControl: true
+      });
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 19
+      }).addTo(map);
+
+      map.on('click', (e) => {
+        setClickedLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
+        setShowForm(true);
+      });
+
+      mapInstanceRef.current = map;
+      setMapReady(true);
+      
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+    };
+    
+    script.onerror = () => {
+      console.error('Map loading error');
+    };
+    
+    document.body.appendChild(script);
+
+    return () => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !window.L || !mapReady) return;
+
+    const L = window.L;
+    
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    pins.forEach(pin => {
+      const iconEmoji = pin.icon || '🎄';
+      const marker = L.marker([pin.lat, pin.lng], {
+        icon: L.divIcon({
+          html: `<div style="font-size: 42px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)); transform: translateY(-5px);">${iconEmoji}</div>`,
+          className: 'custom-marker',
+          iconSize: [42, 42],
+          iconAnchor: [21, 42]
+        })
+      }).addTo(mapInstanceRef.current);
+
+      // Add tooltip on hover
+      const tooltipText = `<strong>${pin.name}</strong><br>Str. ${pin.address}, Nr. ${pin.streetNumber}`;
+      marker.bindTooltip(tooltipText, {
+        direction: 'top',
+        offset: [0, -40],
+        opacity: 0.95
+      });
+
+      marker.on('click', () => {
+        setSelectedPin(pin);
+        setShowForm(false);
+      });
+      
+      markersRef.current.push(marker);
+    });
+  }, [pins, mapReady]);
+
+  const loadPins = async () => {
+    try {
+      const result = await window.storage.list('colind:', true);
+      if (result && result.keys) {
+        const loadedPins = [];
+        for (const key of result.keys) {
+          try {
+            const data = await window.storage.get(key, true);
+            if (data && data.value) {
+              loadedPins.push(JSON.parse(data.value));
+            }
+          } catch (e) {
+            console.log('Key not found:', key);
+          }
+        }
+        setPins(loadedPins);
+      }
+    } catch (error) {
+      console.log('No pins yet');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const savePin = async () => {
+    const missingFields = [];
+    
+    if (!newPin.name || newPin.name.trim() === '') {
+      missingFields.push('Nume Familie');
+    }
+    if (!newPin.address || newPin.address.trim() === '') {
+      missingFields.push('Denumire Stradă');
+    }
+    if (!newPin.streetNumber || newPin.streetNumber.trim() === '') {
+      missingFields.push('Număr Poștal');
+    }
+    
+    if (missingFields.length > 0) {
+      const message = 'Te rog completează următoarele câmpuri obligatorii:\n\n• ' + missingFields.join('\n• ');
+      setErrorMessage(message);
+      return;
+    }
+
+    if (!clickedLocation) {
+      setErrorMessage('Te rog selectează o locație pe hartă!');
+      return;
+    }
+
+    const pinData = {
+      ...newPin,
+      lat: clickedLocation.lat,
+      lng: clickedLocation.lng,
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString()
+    };
+
+    try {
+      await window.storage.set(`colind:${pinData.id}`, JSON.stringify(pinData), true);
+      setPins(prev => [...prev, pinData]);
+      setShowForm(false);
+      setClickedLocation(null);
+      setErrorMessage('');
+      setNewPin({
+        name: '',
+        address: '',
+        streetNumber: '',
+        schedule: '',
+        notes: '',
+        icon: '🎄',
+        password: ''
+      });
+    } catch (error) {
+      console.error('Save error:', error);
+      setErrorMessage('Eroare la salvare: ' + error.message);
+    }
+  };
+
+  const deletePin = async (pinId) => {
+    const pin = pins.find(p => p.id === pinId);
+    if (!pin) {
+      alert('Pin-ul nu a fost găsit!');
+      return;
+    }
+
+    const ADMIN_PASSWORD = 'colind2025';
+    
+    if (!deletePassword) {
+      alert('Te rog introdu parola!');
+      return;
+    }
+    
+    const isAdmin = deletePassword === ADMIN_PASSWORD;
+    const isOwner = pin.password && deletePassword === pin.password;
+    
+    if (!isAdmin && !isOwner) {
+      alert('❌ Parolă incorectă!');
+      setDeletePassword('');
+      return;
+    }
+
+    try {
+      await window.storage.delete(`colind:${pinId}`, true);
+      setPins(prev => prev.filter(p => p.id !== pinId));
+      setSelectedPin(null);
+      setShowDeleteForm(false);
+      setDeletePassword('');
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Eroare la ștergere: ' + error.message);
+    }
+  };
+
+  const cancelForm = () => {
+    setShowForm(false);
+    setClickedLocation(null);
+    setErrorMessage('');
+    setNewPin({
+      name: '',
+      address: '',
+      streetNumber: '',
+      schedule: '',
+      notes: '',
+      icon: '🎄',
+      password: ''
+    });
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col bg-gradient-to-br from-red-50 to-green-50">
+      <div className="bg-gradient-to-r from-red-600 to-green-600 text-white p-4 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3">
+            <MapPin className="w-8 h-8" />
             <div>
-                <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Completează formularul → Apasă "Adaugă pe Hartă"
+              <h1 className="text-2xl font-bold">Colindători Bine Veniți 🎄</h1>
+              <p className="text-sm opacity-90">Cartier Tineri, Buftea - Click pe hartă să adaugi casa!</p>
             </div>
+          </div>
+          <div className="bg-white/20 px-4 py-2 rounded-full">
+            <span className="font-semibold">{pins.length} {pins.length === 1 ? 'casă' : 'case'}</span>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <div id="map-container">
-        <div id="map"></div>
-        
-        <button id="add-btn" class="btn btn-primary" style="position: absolute; top: 1rem; right: 1rem; z-index: 9999;">
-            <span style="font-size: 1.25rem;">+</span>
+      <div className="bg-yellow-50 border-b-2 border-yellow-200 px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-yellow-800">
+            <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Completează formularul → Apasă "Adaugă pe Hartă"
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 relative">
+        <div ref={mapRef} className="w-full h-full" />
+
+        {!showForm && !selectedPin && (
+          <button
+            onClick={() => {
+              setClickedLocation({ lat: 44.545593, lng: 25.931531 });
+              setShowForm(true);
+            }}
+            className="absolute top-4 right-4 bg-gradient-to-r from-red-600 to-green-600 text-white px-6 py-3 rounded-full shadow-2xl hover:shadow-3xl transition-all flex items-center gap-2 font-semibold hover:scale-105"
+            style={{zIndex: 9999}}
+          >
+            <Plus className="w-5 h-5" />
             Adaugă Casa Mea
-        </button>
-        
-        <div id="add-modal" class="modal modal-add hidden">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <span style="font-size: 1.5rem;">+</span>
-                    Adaugă Casa Ta
-                </h3>
-                <button class="close-btn" onclick="closeAddModal()">×</button>
-            </div>
-            
-            <div id="location-success" class="success-box hidden">
-                <p class="success-text">✓ Locație selectată</p>
-                <p class="hint-text">Click pe hartă pentru a schimba locația exactă</p>
-            </div>
-            
-            <div id="error-message" class="error-box hidden">
-                <div style="display: flex; gap: 0.5rem;">
-                    <span style="font-size: 1.25rem;">❌</span>
-                    <div style="flex: 1;">
-                        <p class="error-text" style="font-weight: 600; margin-bottom: 0.25rem;">Eroare</p>
-                        <p class="error-text" id="error-text" style="white-space: pre-line;"></p>
-                    </div>
-                </div>
-                <button onclick="closeError()" style="margin-top: 0.5rem; font-size: 0.75rem; color: #991b1b; background: none; border: none; cursor: pointer; font-weight: 500;">
-                    Închide
-                </button>
-            </div>
-            
-            <form id="add-form" onsubmit="handleSubmit(event)">
-                <div class="form-group">
-                    <label class="form-label">Alege iconița ta de Crăciun 🎅</label>
-                    <div class="icon-grid" id="icon-grid"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">👤 Nume Familie *</label>
-                    <input type="text" class="form-input" id="name" placeholder="Numele familiei">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">🏠 Denumire Stradă *</label>
-                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Număr Poștal *</label>
-                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">🕐 Program preferat</label>
-                    <input type="text" class="form-input" id="schedule" placeholder="Ex: 24 dec, 18:00-21:00">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Detalii suplimentare</label>
-                    <textarea class="form-textarea" id="notes" rows="3" placeholder="Ex: Sunați la interfon, poartă verde"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Parolă pentru ștergere (opțional)</label>
-                    <input type="password" class="form-input" id="password" placeholder="Setează o parolă">
-                    <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
-                </div>
-                
-                <!-- Spacer pentru a putea face scroll -->
-                <div style="height: 120px;"></div>
-                
-                <div class="submit-btn-container">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        Adaugă pe Hartă
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <div id="view-modal" class="modal modal-view hidden">
-            <div id="view-content"></div>
-            <div id="delete-form" class="hidden">
-                <div class="modal-header">
-                    <h3 class="modal-title" style="color: #dc2626;">Șterge Pin</h3>
-                    <button class="close-btn" onclick="closeDeleteForm()">×</button>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Introdu parola:</label>
-                    <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere">
-                    <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
-                </div>
-                
-                <!-- Spacer pentru a putea face scroll pe mobil -->
-                <div style="height: 80px;"></div>
-                
-                <div style="padding-top: 1rem; border-top: 2px solid #e5e7eb;">
-                    <div class="action-buttons">
-                        <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
-                            Șterge Pin
-                        </button>
-                        <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
-                            Anulează
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="loading">
-            <div style="text-align: center;">
-                <div class="spinner"></div>
-                <p style="margin-top: 1rem; color: #6b7280; font-weight: 500;">Se încarcă harta...</p>
-            </div>
-        </div>
-    </div>
+          </button>
+        )}
 
-    <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD4j5pOuXalnS-TErmivkJEa-4ki5e_x6s",
-            authDomain: "colindatori-buftea.firebaseapp.com",
-            databaseURL: "https://colindatori-buftea-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "colindatori-buftea",
-            storageBucket: "colindatori-buftea.firebasestorage.app",
-            messagingSenderId: "386078081254",
-            appId: "1:386078081254:web:8625f492e1a110fa257b27"
-        };
-        
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        
-        const ADMIN_PASSWORD = 'colind2025';
-        const ICONS = ['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'];
-        
-        let map;
-        let markers = [];
-        let pins = [];
-        let selectedIcon = '🎄';
-        let clickedLocation = null;
-        let selectedPin = null;
-        
-        document.addEventListener('DOMContentLoaded', init);
-        
-        function init() {
-            initMap();
-            initIconGrid();
-            loadPins();
-            
-            document.getElementById('add-btn').addEventListener('click', openAddModal);
-        }
-        
-        function initMap() {
-            map = L.map('map').setView([44.545593, 25.931531], 17);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(map);
-            
-            map.on('click', (e) => {
-                clickedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
-                
-                // Add temporary marker at clicked location
-                if (window.tempMarker) {
-                    window.tempMarker.remove();
-                }
-                
-                window.tempMarker = L.marker([e.latlng.lat, e.latlng.lng], {
-                    icon: L.divIcon({
-                        html: '<div style="font-size: 48px; animation: pulse 1s infinite;">📍</div><style>@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); }}</style>',
-                        className: 'temp-marker',
-                        iconSize: [48, 48],
-                        iconAnchor: [24, 48]
-                    })
-                }).addTo(map);
-                
-                // Update location in form if it's open
-                if (!document.getElementById('add-modal').classList.contains('hidden')) {
-                    document.getElementById('location-success').classList.remove('hidden');
-                }
-            });
-            
-            setTimeout(() => {
-                map.invalidateSize();
-                document.getElementById('loading').classList.add('hidden');
-            }, 100);
-        }
-        
-        function initIconGrid() {
-            const grid = document.getElementById('icon-grid');
-            grid.innerHTML = '';
-            ICONS.forEach(icon => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'icon-btn';
-                btn.textContent = icon;
-                btn.onclick = () => selectIcon(icon);
-                if (icon === selectedIcon) btn.classList.add('selected');
-                grid.appendChild(btn);
-            });
-        }
-        
-        function selectIcon(icon) {
-            selectedIcon = icon;
-            document.querySelectorAll('.icon-btn').forEach(btn => {
-                btn.classList.toggle('selected', btn.textContent === icon);
-            });
-        }
-        
-        function loadPins() {
-            database.ref('pins').on('value', (snapshot) => {
-                pins = [];
-                snapshot.forEach((child) => {
-                    pins.push({ id: child.key, ...child.val() });
-                });
-                updateMap();
-                updatePinCount();
-            });
-        }
-        
-        function updateMap() {
-            markers.forEach(marker => marker.remove());
-            markers = [];
-            
-            pins.forEach(pin => {
-                const icon = pin.icon || '🎄';
-                const marker = L.marker([pin.lat, pin.lng], {
-                    icon: L.divIcon({
-                        html: `<div style="font-size: 42px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4)); transform: translateY(-5px);">${icon}</div>`,
-                        className: 'custom-marker',
-                        iconSize: [42, 42],
-                        iconAnchor: [21, 42]
-                    })
-                }).addTo(map);
-                
-                marker.on('click', () => showPin(pin));
-                markers.push(marker);
-            });
-        }
-        
-        function updatePinCount() {
-            const count = pins.length;
-            const text = count === 1 ? 'casă' : 'case';
-            document.getElementById('pin-count-text').textContent = `${count} ${text}`;
-        }
-        
-        function showError(message) {
-            document.getElementById('error-text').textContent = message;
-            document.getElementById('error-message').classList.remove('hidden');
-        }
-        
-        function closeError() {
-            document.getElementById('error-message').classList.add('hidden');
-        }
-        
-        function openAddModal() {
-            if (!clickedLocation) {
-                alert('⚠️ Mai întâi dă click pe hartă unde vrei să adaugi casa!');
-                return;
-            }
-            document.getElementById('add-modal').classList.remove('hidden');
-            document.getElementById('location-success').classList.remove('hidden');
-            document.getElementById('view-modal').classList.add('hidden');
-        }
-        
-        function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
-            document.getElementById('add-form').reset();
-            document.getElementById('error-message').classList.add('hidden');
-            clickedLocation = null;
-            selectedIcon = '🎄';
-            initIconGrid();
-            
-            // Remove temporary marker
-            if (window.tempMarker) {
-                window.tempMarker.remove();
-                window.tempMarker = null;
-            }
-        }
-        
-        function handleSubmit(e) {
-            e.preventDefault();
-            
-            closeError();
-            
-            const name = document.getElementById('name').value.trim();
-            const address = document.getElementById('address').value.trim();
-            const streetNumber = document.getElementById('streetNumber').value.trim();
-            
-            const missingFields = [];
-            if (!name) missingFields.push('Nume Familie');
-            if (!address) missingFields.push('Denumire Stradă');
-            if (!streetNumber) missingFields.push('Număr Poștal');
-            
-            if (missingFields.length > 0) {
-                showError('Te rog completează următoarele câmpuri obligatorii:\n\n• ' + missingFields.join('\n• '));
-                return;
-            }
-            
-            if (!clickedLocation) {
-                showError('Te rog selectează o locație pe hartă!');
-                return;
-            }
-            
-            const pinData = {
-                name,
-                address,
-                streetNumber,
-                schedule: document.getElementById('schedule').value,
-                notes: document.getElementById('notes').value,
-                icon: selectedIcon,
-                password: document.getElementById('password').value,
-                lat: clickedLocation.lat,
-                lng: clickedLocation.lng,
-                timestamp: new Date().toISOString()
-            };
-            
-            database.ref('pins').push(pinData)
-                .then(() => {
-                    closeAddModal();
-                    
-                    // Remove temporary marker
-                    if (window.tempMarker) {
-                        window.tempMarker.remove();
-                        window.tempMarker = null;
-                    }
-                    
-                    alert('✅ Casă adăugată cu succes!');
-                })
-                .catch((error) => {
-                    console.error('Save error:', error);
-                    showError('Eroare la salvare: ' + error.message);
-                });
-        }
-        
-        function showPin(pin) {
-            selectedPin = pin;
-            const addressText = `Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-            
-            let html = `
-                <div class="modal-header">
-                    <div>
-                        <h3 class="modal-title">${pin.name}</h3>
-                        <p class="pin-detail">
-                            <span>🏠</span>
-                            ${addressText}
-                        </p>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <button class="icon-delete" onclick="showDeleteForm()">🗑️</button>
-                        <button class="close-btn" onclick="closeViewModal()">×</button>
-                    </div>
+        {showForm && (
+          <div className="absolute top-4 right-4 bg-white rounded-lg shadow-2xl p-6 w-96 max-h-[calc(100vh-180px)] overflow-y-auto border-2 border-red-300" style={{zIndex: 9999}}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Plus className="w-6 h-6 text-red-600" />
+                Adaugă Casa Ta
+              </h3>
+              <button
+                onClick={cancelForm}
+                className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {clickedLocation && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-green-800 font-medium">
+                  ✓ Locație selectată
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  Click pe hartă pentru a schimba locația exactă
+                </p>
+              </div>
+            )}
+
+            {errorMessage && (
+              <div className="bg-red-50 border border-red-300 rounded-lg p-4 mb-4">
+                <div className="flex gap-2">
+                  <span className="text-red-600 text-xl flex-shrink-0">❌</span>
+                  <div>
+                    <p className="text-sm font-semibold text-red-800 mb-1">Eroare</p>
+                    <p className="text-sm text-red-700 whitespace-pre-line">{errorMessage}</p>
+                  </div>
                 </div>
-            `;
-            
-            if (pin.schedule) {
-                html += `<p class="pin-detail"><span>🕐</span><span style="font-weight: 500;">${pin.schedule}</span></p>`;
-            }
-            
-            if (pin.notes) {
-                html += `<div class="divider"><p style="font-size: 0.875rem; color: #6b7280;">${pin.notes}</p></div>`;
-            }
-            
-            document.getElementById('view-content').innerHTML = html;
-            document.getElementById('view-modal').classList.remove('hidden');
-            document.getElementById('delete-form').classList.add('hidden');
-            document.getElementById('add-modal').classList.add('hidden');
-        }
-        
-        function closeViewModal() {
-            document.getElementById('view-modal').classList.add('hidden');
-            selectedPin = null;
-        }
-        
-        function showDeleteForm() {
-            document.getElementById('view-content').classList.add('hidden');
-            document.getElementById('delete-form').classList.remove('hidden');
-        }
-        
-        function closeDeleteForm() {
-            document.getElementById('view-content').classList.remove('hidden');
-            document.getElementById('delete-form').classList.add('hidden');
-            document.getElementById('delete-password').value = '';
-        }
-        
-        function confirmDelete() {
-            if (!selectedPin) return;
-            
-            const password = document.getElementById('delete-password').value;
-            
-            if (!password) {
-                alert('Te rog introdu parola!');
-                return;
-            }
-            
-            const isAdmin = password === ADMIN_PASSWORD;
-            const isOwner = selectedPin.password && password === selectedPin.password;
-            
-            if (!isAdmin && !isOwner) {
-                alert('❌ Parolă incorectă!');
-                document.getElementById('delete-password').value = '';
-                return;
-            }
-            
-            database.ref('pins/' + selectedPin.id).remove()
-                .then(() => {
-                    closeViewModal();
-                    alert('✅ Pin șters cu succes!');
-                })
-                .catch((error) => {
-                    console.error('Delete error:', error);
-                    alert('Eroare la ștergere: ' + error.message);
-                });
-        }
-    </script>
-</body>
-</html>
+                <button
+                  onClick={() => setErrorMessage('')}
+                  className="mt-2 text-xs text-red-600 hover:text-red-800 font-medium"
+                >
+                  Închide
+                </button>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Alege iconița ta de Crăciun 🎅
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'].map(emoji => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      onClick={() => setNewPin({...newPin, icon: emoji})}
+                      className={`text-4xl p-3 rounded-lg transition-all hover:scale-110 ${
+                        newPin.icon === emoji 
+                          ? 'bg-red-100 border-2 border-red-500 shadow-lg' 
+                          : 'bg-gray-50 border-2 border-gray-200 hover:border-red-300'
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                  <User className="w-4 h-4" />
+                  Nume Familie *
+                </label>
+                <input
+                  type="text"
+                  value={newPin.name}
+                  onChange={(e) => setNewPin({...newPin, name: e.target.value})}
+                  placeholder="Numele familiei"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                  <Home className="w-4 h-4" />
+                  Denumire Stradă *
+                </label>
+                <input
+                  type="text"
+                  value={newPin.address}
+                  onChange={(e) => setNewPin({...newPin, address: e.target.value})}
+                  placeholder="Denumire stradă"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Număr Poștal *
+                </label>
+                <input
+                  type="text"
+                  value={newPin.streetNumber || ''}
+                  onChange={(e) => setNewPin({...newPin, streetNumber: e.target.value})}
+                  placeholder="Număr poștal"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                  <Clock className="w-4 h-4" />
+                  Program preferat
+                </label>
+                <input
+                  type="text"
+                  value={newPin.schedule}
+                  onChange={(e) => setNewPin({...newPin, schedule: e.target.value})}
+                  placeholder="Ex: 24 dec, 18:00-21:00"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Detalii suplimentare
+                </label>
+                <textarea
+                  value={newPin.notes}
+                  onChange={(e) => setNewPin({...newPin, notes: e.target.value})}
+                  placeholder="Ex: Sunați la interfon, poartă verde"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Parolă pentru ștergere (opțional)
+                </label>
+                <input
+                  type="password"
+                  value={newPin.password}
+                  onChange={(e) => setNewPin({...newPin, password: e.target.value})}
+                  placeholder="Setează o parolă pentru a putea șterge pin-ul"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  💡 Doar tu vei putea șterge pin-ul cu această parolă
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={savePin}
+                className="w-full bg-gradient-to-r from-red-600 to-green-600 text-white py-3 rounded-lg font-semibold hover:from-red-700 hover:to-green-700 transition-all shadow-lg"
+              >
+                Adaugă pe Hartă
+              </button>
+            </div>
+          </div>
+        )}
+
+        {selectedPin && !showForm && (
+          <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-2xl p-6 w-96 border-2 border-green-300" style={{zIndex: 9999}}>
+            {!showDeleteForm ? (
+              <>
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800">{selectedPin.name}</h3>
+                    <p className="text-gray-600 flex items-center gap-2 mt-1">
+                      <Home className="w-4 h-4" />
+                      Str. {selectedPin.address}, Nr. {selectedPin.streetNumber}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowDeleteForm(true)}
+                      className="text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                      title="Șterge"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setSelectedPin(null)}
+                      className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded"
+                    >
+                      <X className="w-6 h-6" />
+                    </button>
+                  </div>
+                </div>
+
+                {selectedPin.schedule && (
+                  <div className="flex items-center gap-2 text-gray-700 mb-2">
+                    <Clock className="w-4 h-4 text-red-600" />
+                    <span className="text-sm font-medium">{selectedPin.schedule}</span>
+                  </div>
+                )}
+
+                {selectedPin.notes && (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-sm text-gray-600">{selectedPin.notes}</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-red-600">Șterge Pin</h3>
+                  <button
+                    onClick={() => {
+                      setShowDeleteForm(false);
+                      setDeletePassword('');
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Introdu parola:
+                    </label>
+                    <input
+                      type="password"
+                      value={deletePassword}
+                      onChange={(e) => setDeletePassword(e.target.value)}
+                      placeholder="Parola de ștergere"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          deletePin(selectedPin.id);
+                        }
+                      }}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      💡 Introdu parola ta dacă ai setat-o, sau cere adminului să o șteargă pentru tine
+                    </p>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => deletePin(selectedPin.id)}
+                      className="flex-1 bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+                    >
+                      Șterge Pin
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDeleteForm(false);
+                        setDeletePassword('');
+                      }}
+                      className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                    >
+                      Anulează
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {loading && (
+          <div className="absolute inset-0 bg-white/90 flex items-center justify-center" style={{zIndex: 9999}}>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent mx-auto mb-4"></div>
+              <p className="text-gray-600 font-medium">Se încarcă harta...</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
