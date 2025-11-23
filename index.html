@@ -141,6 +141,9 @@
             right: 1rem;
             width: 24rem;
             border: 2px solid #fca5a5;
+            max-width: calc(100vw - 2rem);
+            display: flex;
+            flex-direction: column;
         }
         
         .modal-view {
@@ -327,14 +330,46 @@
         }
         
         @media (max-width: 640px) {
+            #header h1 {
+                font-size: 1.25rem;
+            }
+            
+            #header p {
+                font-size: 0.75rem;
+            }
+            
             .modal-add, .modal-view {
-                width: calc(100% - 2rem);
+                width: calc(100vw - 2rem);
                 left: 1rem;
                 right: 1rem;
+                max-height: calc(100vh - 160px);
+                display: flex;
+                flex-direction: column;
             }
             
             .modal-add {
-                top: 1rem;
+                top: 0.5rem;
+            }
+            
+            #add-btn {
+                top: 0.5rem !important;
+                right: 0.5rem !important;
+                padding: 0.5rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+            
+            .form-input, .form-textarea {
+                font-size: 16px !important;
+            }
+            
+            .form-group {
+                margin-bottom: 0.75rem;
+            }
+            
+            #add-form {
+                display: flex;
+                flex-direction: column;
+                max-height: calc(100vh - 240px);
             }
         }
     </style>
@@ -406,7 +441,8 @@
                 </button>
             </div>
             
-            <form id="add-form">
+            <form id="add-form" style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;">
+                <div style="flex: 1; overflow-y: auto; padding-bottom: 1rem;">
                 <div class="form-group">
                     <label class="form-label">Alege iconița ta de Crăciun 🎅</label>
                     <div class="icon-grid" id="icon-grid"></div>
@@ -442,8 +478,9 @@
                     <input type="password" class="form-input" id="password" placeholder="Setează o parolă pentru a putea șterge pin-ul">
                     <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
                 </div>
+                </div>
                 
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; background: linear-gradient(to right, #dc2626, #16a34a); flex-shrink: 0; margin-top: 0;">
                     Adaugă pe Hartă
                 </button>
             </form>
