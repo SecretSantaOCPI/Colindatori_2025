@@ -6,6 +6,11 @@
     <title>Colindători Bine Veniți - Cartier Tineri Buftea</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -90,8 +95,9 @@
             border-radius: 9999px;
             font-weight: 600;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             transition: all 0.2s;
         }
@@ -142,8 +148,6 @@
             width: 24rem;
             border: 2px solid #fca5a5;
             max-width: calc(100vw - 2rem);
-            display: flex;
-            flex-direction: column;
         }
         
         .modal-view {
@@ -175,6 +179,7 @@
             cursor: pointer;
             padding: 0.25rem;
             color: #9ca3af;
+            font-size: 1.5rem;
         }
         
         .close-btn:hover {
@@ -200,6 +205,7 @@
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             font-size: 0.875rem;
+            font-family: inherit;
         }
         
         .form-input:focus, .form-textarea:focus {
@@ -296,6 +302,7 @@
             cursor: pointer;
             border-radius: 0.5rem;
             transition: background 0.2s;
+            font-size: 1.25rem;
         }
         
         .icon-delete:hover {
@@ -329,6 +336,15 @@
             display: none !important;
         }
         
+        .submit-btn-container {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding-top: 1rem;
+            margin-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
         @media (max-width: 640px) {
             #header h1 {
                 font-size: 1.25rem;
@@ -343,8 +359,6 @@
                 left: 1rem;
                 right: 1rem;
                 max-height: calc(100vh - 160px);
-                display: flex;
-                flex-direction: column;
             }
             
             .modal-add {
@@ -365,17 +379,10 @@
             .form-group {
                 margin-bottom: 0.75rem;
             }
-            
-            #add-form {
-                display: flex;
-                flex-direction: column;
-                max-height: calc(100vh - 240px);
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div id="header">
         <div id="header-content">
             <div id="header-title">
@@ -391,7 +398,6 @@
         </div>
     </div>
 
-    <!-- Instructions -->
     <div id="instructions">
         <div id="instructions-content">
             <span>⚠️</span>
@@ -401,26 +407,21 @@
         </div>
     </div>
 
-    <!-- Map -->
     <div id="map-container">
         <div id="map"></div>
         
-        <!-- Add Button -->
         <button id="add-btn" class="btn btn-primary" style="position: absolute; top: 1rem; right: 1rem; z-index: 9999;">
             <span style="font-size: 1.25rem;">+</span>
             Adaugă Casa Mea
         </button>
         
-        <!-- Add Modal -->
         <div id="add-modal" class="modal modal-add hidden">
             <div class="modal-header">
                 <h3 class="modal-title">
                     <span style="font-size: 1.5rem;">+</span>
                     Adaugă Casa Ta
                 </h3>
-                <button class="close-btn" onclick="closeAddModal()">
-                    <span style="font-size: 1.5rem;">×</span>
-                </button>
+                <button class="close-btn" onclick="closeAddModal()">×</button>
             </div>
             
             <div id="location-success" class="success-box hidden">
@@ -431,9 +432,9 @@
             <div id="error-message" class="error-box hidden">
                 <div style="display: flex; gap: 0.5rem;">
                     <span style="font-size: 1.25rem;">❌</span>
-                    <div>
+                    <div style="flex: 1;">
                         <p class="error-text" style="font-weight: 600; margin-bottom: 0.25rem;">Eroare</p>
-                        <p class="error-text" id="error-text"></p>
+                        <p class="error-text" id="error-text" style="white-space: pre-line;"></p>
                     </div>
                 </div>
                 <button onclick="closeError()" style="margin-top: 0.5rem; font-size: 0.75rem; color: #991b1b; background: none; border: none; cursor: pointer; font-weight: 500;">
@@ -441,8 +442,7 @@
                 </button>
             </div>
             
-            <form id="add-form" style="display: flex; flex-direction: column; flex: 1; overflow-y: auto;">
-                <div style="flex: 1; overflow-y: auto; padding-bottom: 1rem;">
+            <form id="add-form" onsubmit="handleSubmit(event)">
                 <div class="form-group">
                     <label class="form-label">Alege iconița ta de Crăciun 🎅</label>
                     <div class="icon-grid" id="icon-grid"></div>
@@ -450,17 +450,17 @@
                 
                 <div class="form-group">
                     <label class="form-label">👤 Nume Familie *</label>
-                    <input type="text" class="form-input" id="name" placeholder="Numele familiei" required>
+                    <input type="text" class="form-input" id="name" placeholder="Numele familiei">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">🏠 Denumire Stradă *</label>
-                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă" required>
+                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Număr Poștal *</label>
-                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal" required>
+                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal">
                 </div>
                 
                 <div class="form-group">
@@ -475,46 +475,43 @@
                 
                 <div class="form-group">
                     <label class="form-label">Parolă pentru ștergere (opțional)</label>
-                    <input type="password" class="form-input" id="password" placeholder="Setează o parolă pentru a putea șterge pin-ul">
+                    <input type="password" class="form-input" id="password" placeholder="Setează o parolă">
                     <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
                 </div>
-                </div>
                 
-                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; background: linear-gradient(to right, #dc2626, #16a34a); flex-shrink: 0; margin-top: 0;">
-                    Adaugă pe Hartă
-                </button>
+                <div class="submit-btn-container">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Adaugă pe Hartă
+                    </button>
+                </div>
             </form>
         </div>
         
-        <!-- View Modal -->
         <div id="view-modal" class="modal modal-view hidden">
             <div id="view-content"></div>
             <div id="delete-form" class="hidden">
                 <div class="modal-header">
                     <h3 class="modal-title" style="color: #dc2626;">Șterge Pin</h3>
-                    <button class="close-btn" onclick="closeDeleteForm()">
-                        <span style="font-size: 1.5rem;">×</span>
-                    </button>
+                    <button class="close-btn" onclick="closeDeleteForm()">×</button>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Introdu parola:</label>
                     <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere">
-                    <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului să o șteargă pentru tine</p>
+                    <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
                 </div>
                 
                 <div class="action-buttons">
-                    <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1; justify-content: center;">
+                    <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
                         Șterge Pin
                     </button>
-                    <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1; justify-content: center;">
+                    <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
                         Anulează
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Loading -->
         <div id="loading">
             <div style="text-align: center;">
                 <div class="spinner"></div>
@@ -524,6 +521,21 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4j5pOuXalnS-TErmivkJEa-4ki5e_x6s",
+            authDomain: "colindatori-buftea.firebaseapp.com",
+            databaseURL: "https://colindatori-buftea-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "colindatori-buftea",
+            storageBucket: "colindatori-buftea.firebasestorage.app",
+            messagingSenderId: "386078081254",
+            appId: "1:386078081254:web:8625f492e1a110fa257b27"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
         const ADMIN_PASSWORD = 'colind2025';
         const ICONS = ['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'];
         
@@ -534,7 +546,6 @@
         let clickedLocation = null;
         let selectedPin = null;
         
-        // Initialize
         document.addEventListener('DOMContentLoaded', init);
         
         function init() {
@@ -543,7 +554,6 @@
             loadPins();
             
             document.getElementById('add-btn').addEventListener('click', openAddModal);
-            document.getElementById('add-form').addEventListener('submit', handleSubmit);
         }
         
         function initMap() {
@@ -571,6 +581,7 @@
         
         function initIconGrid() {
             const grid = document.getElementById('icon-grid');
+            grid.innerHTML = '';
             ICONS.forEach(icon => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
@@ -589,27 +600,15 @@
             });
         }
         
-        async function loadPins() {
-            try {
-                const result = await window.storage.list('colind:', true);
-                if (result && result.keys) {
-                    pins = [];
-                    for (const key of result.keys) {
-                        try {
-                            const data = await window.storage.get(key, true);
-                            if (data && data.value) {
-                                pins.push(JSON.parse(data.value));
-                            }
-                        } catch (e) {
-                            console.log('Key not found:', key);
-                        }
-                    }
-                    updateMap();
-                    updatePinCount();
-                }
-            } catch (error) {
-                console.log('No pins yet');
-            }
+        function loadPins() {
+            database.ref('pins').on('value', (snapshot) => {
+                pins = [];
+                snapshot.forEach((child) => {
+                    pins.push({ id: child.key, ...child.val() });
+                });
+                updateMap();
+                updatePinCount();
+            });
         }
         
         function updateMap() {
@@ -665,7 +664,7 @@
             initIconGrid();
         }
         
-        async function handleSubmit(e) {
+        function handleSubmit(e) {
             e.preventDefault();
             
             closeError();
@@ -690,7 +689,6 @@
             }
             
             const pinData = {
-                id: Date.now().toString(),
                 name,
                 address,
                 streetNumber,
@@ -703,16 +701,15 @@
                 timestamp: new Date().toISOString()
             };
             
-            try {
-                await window.storage.set(`colind:${pinData.id}`, JSON.stringify(pinData), true);
-                pins.push(pinData);
-                updateMap();
-                updatePinCount();
-                closeAddModal();
-            } catch (error) {
-                console.error('Save error:', error);
-                showError('Eroare la salvare. Te rog încearcă din nou!');
-            }
+            database.ref('pins').push(pinData)
+                .then(() => {
+                    closeAddModal();
+                    alert('✅ Casă adăugată cu succes!');
+                })
+                .catch((error) => {
+                    console.error('Save error:', error);
+                    showError('Eroare la salvare: ' + error.message);
+                });
         }
         
         function showPin(pin) {
@@ -729,31 +726,18 @@
                         </p>
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
-                        <button class="icon-delete" onclick="showDeleteForm()">
-                            <span style="font-size: 1.25rem;">🗑️</span>
-                        </button>
-                        <button class="close-btn" onclick="closeViewModal()">
-                            <span style="font-size: 1.5rem;">×</span>
-                        </button>
+                        <button class="icon-delete" onclick="showDeleteForm()">🗑️</button>
+                        <button class="close-btn" onclick="closeViewModal()">×</button>
                     </div>
                 </div>
             `;
             
             if (pin.schedule) {
-                html += `
-                    <p class="pin-detail">
-                        <span>🕐</span>
-                        <span style="font-weight: 500;">${pin.schedule}</span>
-                    </p>
-                `;
+                html += `<p class="pin-detail"><span>🕐</span><span style="font-weight: 500;">${pin.schedule}</span></p>`;
             }
             
             if (pin.notes) {
-                html += `
-                    <div class="divider">
-                        <p style="font-size: 0.875rem; color: #6b7280;">${pin.notes}</p>
-                    </div>
-                `;
+                html += `<div class="divider"><p style="font-size: 0.875rem; color: #6b7280;">${pin.notes}</p></div>`;
             }
             
             document.getElementById('view-content').innerHTML = html;
@@ -778,7 +762,7 @@
             document.getElementById('delete-password').value = '';
         }
         
-        async function confirmDelete() {
+        function confirmDelete() {
             if (!selectedPin) return;
             
             const password = document.getElementById('delete-password').value;
@@ -797,16 +781,15 @@
                 return;
             }
             
-            try {
-                await window.storage.delete(`colind:${selectedPin.id}`, true);
-                pins = pins.filter(p => p.id !== selectedPin.id);
-                updateMap();
-                updatePinCount();
-                closeViewModal();
-            } catch (error) {
-                console.error('Delete error:', error);
-                alert('Eroare la ștergere: ' + error.message);
-            }
+            database.ref('pins/' + selectedPin.id).remove()
+                .then(() => {
+                    closeViewModal();
+                    alert('✅ Pin șters cu succes!');
+                })
+                .catch((error) => {
+                    console.error('Delete error:', error);
+                    alert('Eroare la ștergere: ' + error.message);
+                });
         }
     </script>
 </body>
