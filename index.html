@@ -938,12 +938,20 @@
             // Inițializare hartă Leaflet
             map = L.map('map').setView([44.545593, 25.931531], 17);
             
-            // Folosim CartoDB Voyager care arată foarte bine clădirile
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
-                maxZoom: 20
+            // Folosim OpenStreetMap HOT (Humanitarian) care are mai multe detalii despre clădiri
+            L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
+                maxZoom: 19
             }).addTo(map);
+            
+            // Adăugăm și un layer pentru clădiri (dacă este disponibil în zonă)
+            try {
+                L.tileLayer('https://tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+            } catch (e) {
+                console.log("Layer-ul pentru clădiri nu este disponibil în această zonă");
+            }
             
             // Eveniment pentru click pe hartă
             map.on('click', (e) => {
