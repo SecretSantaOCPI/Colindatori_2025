@@ -27,13 +27,13 @@
         #header {
             background: linear-gradient(to right, #dc2626, #16a34a);
             color: white;
-            padding: 1rem;
+            padding: 0.75rem 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
         }
         
         #header-content {
-            max-width: 1280px;
-            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -44,44 +44,46 @@
         #header-title {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
         }
         
         #header h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         #header p {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             opacity: 0.9;
+            display: none;
         }
         
         #pin-count {
             background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 9999px;
             font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
         }
         
         #instructions {
             background: #fef3c7;
             border-bottom: 2px solid #fcd34d;
-            padding: 0.75rem 1rem;
-        }
-        
-        #instructions-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            gap: 0.75rem;
-            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
             color: #92400e;
         }
         
         #map-container {
             position: relative;
-            height: calc(100vh - 140px);
+            height: calc(100vh - 110px);
+            width: 100%;
         }
         
         #map {
@@ -90,7 +92,7 @@
         }
         
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.25rem;
             border: none;
             border-radius: 9999px;
             font-weight: 600;
@@ -100,17 +102,19 @@
             justify-content: center;
             gap: 0.5rem;
             transition: all 0.2s;
+            font-size: 0.875rem;
+            white-space: nowrap;
         }
         
         .btn-primary {
             background: linear-gradient(to right, #dc2626, #16a34a);
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
         }
         
         .btn-primary:hover {
             transform: scale(1.05);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 15px -3px rgba(0,0,0,0.3);
         }
         
         .btn-danger {
@@ -131,30 +135,71 @@
             background: #d1d5db;
         }
         
+        /* BUTOANE FIXATE PE MOBIL */
+        #mobile-controls {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        #add-btn-mobile {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: linear-gradient(to right, #dc2626, #16a34a);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        
+        #location-btn-mobile {
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        
         .modal {
-            position: absolute;
+            position: fixed;
             background: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
-            padding: 1.5rem;
-            z-index: 9999;
-            max-height: calc(100vh - 180px);
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            z-index: 2000;
+            max-height: 85vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90vw;
+            max-width: 400px;
         }
         
         .modal-add {
-            top: 1rem;
-            right: 1rem;
-            width: 24rem;
-            border: 2px solid #fca5a5;
-            max-width: calc(100vw - 2rem);
+            top: 2rem;
         }
         
         .modal-view {
-            bottom: 1rem;
-            left: 1rem;
-            width: 24rem;
-            border: 2px solid #86efac;
+            top: 2rem;
         }
         
         .modal-header {
@@ -162,6 +207,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
+            padding: 1.25rem 1.25rem 0;
         }
         
         .modal-title {
@@ -177,18 +223,19 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 0.25rem;
-            color: #9ca3af;
+            padding: 0.5rem;
+            color: #6b7280;
             font-size: 1.5rem;
+            border-radius: 0.5rem;
         }
         
         .close-btn:hover {
             background: #f3f4f6;
-            border-radius: 0.25rem;
         }
         
         .form-group {
             margin-bottom: 1rem;
+            padding: 0 1.25rem;
         }
         
         .form-label {
@@ -196,21 +243,23 @@
             font-size: 0.875rem;
             font-weight: 500;
             color: #374151;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
         
         .form-input, .form-textarea {
             width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 1rem;
             font-family: inherit;
+            background: #f9fafb;
         }
         
         .form-input:focus, .form-textarea:focus {
             outline: none;
             border-color: #dc2626;
+            background: white;
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
         
@@ -222,18 +271,22 @@
         }
         
         .icon-btn {
-            font-size: 2.5rem;
+            font-size: 2rem;
             padding: 0.75rem;
             border: 2px solid #e5e7eb;
             background: #f9fafb;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .icon-btn:hover {
             border-color: #fca5a5;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         
         .icon-btn.selected {
@@ -245,17 +298,17 @@
         .success-box {
             background: #dcfce7;
             border: 1px solid #bbf7d0;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 0.75rem;
-            margin-bottom: 1rem;
+            margin: 0 1.25rem 1rem;
         }
         
         .error-box {
             background: #fee2e2;
             border: 1px solid #fca5a5;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 1rem;
-            margin-bottom: 1rem;
+            margin: 0 1.25rem 1rem;
         }
         
         .success-text {
@@ -277,21 +330,23 @@
         
         .pin-detail {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.5rem;
             color: #374151;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding: 0 1.25rem;
         }
         
         .divider {
             border-top: 1px solid #e5e7eb;
-            margin: 0.75rem 0;
-            padding-top: 0.75rem;
+            margin: 1rem 1.25rem;
+            padding-top: 1rem;
         }
         
         .action-buttons {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
+            padding: 0 1.25rem 1.25rem;
         }
         
         .icon-delete {
@@ -303,6 +358,9 @@
             border-radius: 0.5rem;
             transition: background 0.2s;
             font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .icon-delete:hover {
@@ -338,9 +396,10 @@
         
         .submit-btn-container {
             background: white;
-            padding-top: 1rem;
-            margin-top: 1rem;
+            padding: 1.25rem;
             border-top: 2px solid #e5e7eb;
+            position: sticky;
+            bottom: 0;
         }
         
         .connection-status {
@@ -350,22 +409,21 @@
             z-index: 999;
             padding: 0.5rem 1rem;
             border-radius: 9999px;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 500;
             display: flex;
             align-items: center;
             gap: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95);
         }
         
         .connection-status.connected {
-            background: #dcfce7;
             color: #166534;
             border: 1px solid #bbf7d0;
         }
         
         .connection-status.disconnected {
-            background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fca5a5;
         }
@@ -375,24 +433,26 @@
             top: 1rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 10000;
+            z-index: 3000;
             padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             font-weight: 500;
             box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
             animation: slideDown 0.3s ease-out;
+            background: white;
+            border: 2px solid #e5e7eb;
+            max-width: 90vw;
+            text-align: center;
         }
         
         .toast.success {
-            background: #dcfce7;
+            border-color: #bbf7d0;
             color: #166534;
-            border: 1px solid #bbf7d0;
         }
         
         .toast.error {
-            background: #fee2e2;
+            border-color: #fca5a5;
             color: #991b1b;
-            border: 1px solid #fca5a5;
         }
         
         @keyframes slideDown {
@@ -406,97 +466,106 @@
             }
         }
         
-        /* Soluții pentru problemele identificate */
+        /* Overlay pentru modale */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            backdrop-filter: blur(4px);
+        }
         
-        /* 1. Butonul "Adaugă Casa Mea" accesibil pe mobil în portrait */
+        /* Ascundem butonul desktop pe mobil */
         #add-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            z-index: 999;
-            padding: 0.75rem 1.5rem;
+            display: none;
         }
         
-        /* 2. Corecție pentru modal-ul de ștergere pe PC */
-        #view-content {
-            display: block !important;
-        }
-        
-        /* 3. Poziționare buton de conectare pentru a nu acoperi controalele de zoom */
-        .connection-status {
-            top: 4.5rem;
-            left: 0.5rem;
-        }
-        
-        @media (max-width: 640px) {
+        /* Tablet și desktop */
+        @media (min-width: 768px) {
+            #header {
+                padding: 1rem;
+            }
+            
             #header h1 {
-                font-size: 1.25rem;
+                font-size: 1.5rem;
             }
             
             #header p {
-                font-size: 0.75rem;
+                display: block;
+                font-size: 0.875rem;
+            }
+            
+            #pin-count {
+                padding: 0.5rem 1rem;
+                font-size: 1rem;
+            }
+            
+            #instructions {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            #map-container {
+                height: calc(100vh - 140px);
+            }
+            
+            #mobile-controls {
+                display: none;
+            }
+            
+            #add-btn {
+                display: flex;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                z-index: 999;
+                padding: 0.75rem 1.5rem;
+            }
+            
+            .modal {
+                position: absolute;
+                transform: none;
+                width: 24rem;
+                max-width: none;
             }
             
             .modal-add {
-                width: calc(100vw - 2rem);
-                left: 1rem;
+                top: 1rem;
                 right: 1rem;
-                max-height: calc(100vh - 160px);
-                top: 0.5rem;
-                overflow-y: scroll;
+                left: auto;
             }
             
             .modal-view {
-                width: calc(100vw - 2rem);
+                bottom: 1rem;
                 left: 1rem;
-                right: 1rem;
-                bottom: 0.5rem;
-                max-height: calc(100vh - 200px);
-                overflow-y: auto;
-            }
-            
-            /* Butonul "Adaugă Casa Mea" mai mic și mai bine poziționat pe mobil */
-            #add-btn {
-                top: 0.5rem !important;
-                right: 0.5rem !important;
-                padding: 0.5rem 1rem !important;
-                font-size: 0.875rem !important;
-                z-index: 999 !important;
-            }
-            
-            .form-input, .form-textarea {
-                font-size: 16px !important;
-            }
-            
-            .form-group {
-                margin-bottom: 0.75rem;
-            }
-            
-            .submit-btn-container {
-                background: white;
-                padding-top: 1rem;
-                margin-top: 1rem;
-                border-top: 2px solid #dc2626;
-            }
-            
-            /* Butonul de conectare mai mic pe mobil */
-            .connection-status {
-                top: 4rem;
-                left: 0.5rem;
-                font-size: 0.75rem;
-                padding: 0.375rem 0.75rem;
+                top: auto;
             }
         }
         
-        @media (max-width: 480px) and (orientation: portrait) {
-            /* Ajustări suplimentare pentru telefoane mici în portrait */
-            #add-btn {
-                padding: 0.4rem 0.8rem !important;
-                font-size: 0.75rem !important;
+        /* Orientare landscape pe mobil */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #header {
+                padding: 0.5rem 1rem;
             }
             
-            .btn {
-                padding: 0.6rem 1.2rem;
+            #header h1 {
+                font-size: 1.1rem;
+            }
+            
+            #instructions {
+                display: none;
+            }
+            
+            #map-container {
+                height: calc(100vh - 80px);
+            }
+            
+            .modal {
+                max-height: 70vh;
+                top: 1rem;
             }
         }
     </style>
@@ -505,7 +574,7 @@
     <div id="header">
         <div id="header-content">
             <div id="header-title">
-                <span style="font-size: 2rem;">📍</span>
+                <span style="font-size: 1.5rem;">📍</span>
                 <div>
                     <h1>Colindători Bine Veniți 🎄</h1>
                     <p>Cartier Tineri, Buftea - Click pe hartă să adaugi casa!</p>
@@ -521,7 +590,7 @@
         <div id="instructions-content">
             <span>⚠️</span>
             <div>
-                <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Apasă "Adaugă Casa Mea" → Completează formularul
+                <strong>Cum adaugi casa ta:</strong> Click pe hartă în locația casei tale → Apasă "+" → Completează formularul
             </div>
         </div>
     </div>
@@ -534,11 +603,26 @@
             <span class="status-text"></span>
         </div>
         
+        <!-- Buton desktop (ascuns pe mobil) -->
         <button id="add-btn" class="btn btn-primary">
             <span style="font-size: 1.25rem;">+</span>
             Adaugă Casa Mea
         </button>
         
+        <!-- Butoane mobile (afisate doar pe mobil) -->
+        <div id="mobile-controls">
+            <button id="location-btn-mobile" title="Centrare hartă">
+                📍
+            </button>
+            <button id="add-btn-mobile" title="Adaugă casă">
+                +
+            </button>
+        </div>
+        
+        <!-- Overlay pentru modale -->
+        <div id="modal-overlay" class="modal-overlay hidden"></div>
+        
+        <!-- Modal adaugare -->
         <div id="add-modal" class="modal modal-add hidden">
             <div class="modal-header">
                 <h3 class="modal-title">
@@ -574,17 +658,17 @@
                 
                 <div class="form-group">
                     <label class="form-label">👤 Nume Familie *</label>
-                    <input type="text" class="form-input" id="name" placeholder="Numele familiei" maxlength="50">
+                    <input type="text" class="form-input" id="name" placeholder="Numele familiei" maxlength="50" required>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">🏠 Denumire Stradă *</label>
-                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă" maxlength="50">
+                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă" maxlength="50" required>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Număr Poștal *</label>
-                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal" maxlength="10">
+                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal" maxlength="10" required>
                 </div>
                 
                 <div class="form-group">
@@ -603,8 +687,6 @@
                     <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
                 </div>
                 
-                <div style="height: 120px;"></div>
-                
                 <div class="submit-btn-container">
                     <button type="submit" class="btn btn-primary" style="width: 100%;">
                         Adaugă pe Hartă
@@ -613,6 +695,7 @@
             </form>
         </div>
         
+        <!-- Modal vizualizare -->
         <div id="view-modal" class="modal modal-view hidden">
             <div id="view-content"></div>
             <div id="delete-form" class="hidden">
@@ -623,21 +706,17 @@
                 
                 <div class="form-group">
                     <label class="form-label">Introdu parola:</label>
-                    <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere">
+                    <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere" required>
                     <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
                 </div>
                 
-                <div style="height: 150px;"></div>
-                
-                <div style="padding-top: 1rem; border-top: 2px solid #e5e7eb;">
-                    <div class="action-buttons">
-                        <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
-                            Șterge Pin
-                        </button>
-                        <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
-                            Anulează
-                        </button>
-                    </div>
+                <div class="action-buttons">
+                    <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
+                        Șterge Pin
+                    </button>
+                    <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
+                        Anulează
+                    </button>
                 </div>
             </div>
         </div>
@@ -662,8 +741,6 @@
             appId: "1:386078081254:web:8625f492e1a110fa257b27"
         };
         
-        // Încercăm să obținem parola de admin din variabila de mediu sau folosim o valoare implicită
-        // NOTĂ: În producție, această logică ar trebui să fie pe server
         const ADMIN_PASSWORD = window.ADMIN_PASSWORD || 'colind2025';
         const ICONS = ['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'];
         
@@ -681,7 +758,27 @@
             initFirebase();
             initMap();
             initIconGrid();
+            setupEventListeners();
+        }
+        
+        function setupEventListeners() {
+            // Buton desktop
             document.getElementById('add-btn').addEventListener('click', openAddModal);
+            
+            // Butoane mobile
+            document.getElementById('add-btn-mobile').addEventListener('click', openAddModal);
+            document.getElementById('location-btn-mobile').addEventListener('click', centerMap);
+            
+            // Overlay pentru închidere modală
+            document.getElementById('modal-overlay').addEventListener('click', closeAllModals);
+        }
+        
+        function centerMap() {
+            if (clickedLocation) {
+                map.setView([clickedLocation.lat, clickedLocation.lng], 17);
+            } else {
+                map.setView([44.545593, 25.931531], 17);
+            }
         }
         
         function initFirebase() {
@@ -689,14 +786,12 @@
                 firebase.initializeApp(firebaseConfig);
                 const database = firebase.database();
                 
-                // Monitorizăm starea conexiunii
                 const connectedRef = database.ref(".info/connected");
                 connectedRef.on("value", function(snap) {
                     isConnected = snap.val() === true;
                     updateConnectionStatus();
                 });
                 
-                // Încărcăm pin-urile
                 loadPins();
             } catch (error) {
                 console.error("Eroare la inițializarea Firebase:", error);
@@ -730,7 +825,7 @@
                 maxZoom: 19
             }).addTo(map);
             
-            // Adăugăm un layer pentru a preveni problemele de touch pe dispozitive mobile
+            // Prevenim problemele de touch
             L.DomEvent.on(map.getContainer(), 'touchstart', L.DomEvent.stopPropagation);
             
             map.on('click', (e) => {
@@ -742,7 +837,7 @@
                 
                 window.tempMarker = L.marker([e.latlng.lat, e.latlng.lng], {
                     icon: L.divIcon({
-                        html: '<div style="font-size: 48px; animation: pulse 1s infinite;">📍</div><style>@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); }}</style>',
+                        html: '<div style="font-size: 48px; animation: pulse 1s infinite; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));">📍</div>',
                         className: 'temp-marker',
                         iconSize: [48, 48],
                         iconAnchor: [24, 48]
@@ -754,13 +849,11 @@
                 }
             });
             
-            // Reîncărcăm dimensiunile hărții după un scurt delay pentru a preveni problemele de randare
             setTimeout(() => {
                 map.invalidateSize();
                 document.getElementById('loading').classList.add('hidden');
             }, 300);
             
-            // Reîncărcăm dimensiunile hărții la redimensionarea ferestrei
             window.addEventListener('resize', () => {
                 setTimeout(() => {
                     map.invalidateSize();
@@ -868,13 +961,12 @@
                 showToast('⚠️ Mai întâi dă click pe hartă unde vrei să adaugi casa!', 'error');
                 return;
             }
-            document.getElementById('add-modal').classList.remove('hidden');
+            showModal('add-modal');
             document.getElementById('location-success').classList.remove('hidden');
-            document.getElementById('view-modal').classList.add('hidden');
         }
         
         function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
+            hideModal('add-modal');
             document.getElementById('add-form').reset();
             document.getElementById('error-message').classList.add('hidden');
             clickedLocation = null;
@@ -885,6 +977,23 @@
                 window.tempMarker.remove();
                 window.tempMarker = null;
             }
+        }
+        
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.getElementById('modal-overlay').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.getElementById('modal-overlay').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        
+        function closeAllModals() {
+            hideModal('add-modal');
+            hideModal('view-modal');
         }
         
         function handleSubmit(e) {
@@ -981,18 +1090,13 @@
             }
             
             document.getElementById('view-content').innerHTML = html;
-            document.getElementById('view-modal').classList.remove('hidden');
+            showModal('view-modal');
             document.getElementById('delete-form').classList.add('hidden');
-            document.getElementById('add-modal').classList.add('hidden');
-            
-            // Resetăm starea pentru a preveni problema cu afișarea pe PC
-            document.getElementById('view-content').style.display = 'block';
         }
         
         function closeViewModal() {
-            document.getElementById('view-modal').classList.add('hidden');
+            hideModal('view-modal');
             selectedPin = null;
-            // Asigurăm că conținutul este vizibil pentru următoarea deschidere
             document.getElementById('view-content').style.display = 'block';
             document.getElementById('delete-form').classList.add('hidden');
         }
