@@ -321,7 +321,7 @@
             margin-bottom: 0.5rem;
         }
         
-        .form-input, .form-textarea {
+        .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 0.75rem;
             border: 2px solid #e5e7eb;
@@ -331,7 +331,7 @@
             background: #f9fafb;
         }
         
-        .form-input:focus, .form-textarea:focus {
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
             border-color: #dc2626;
             background: white;
@@ -357,6 +357,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
         }
         
         .icon-btn:hover {
@@ -776,8 +777,11 @@
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">🏠 Denumire Stradă *</label>
-                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă" maxlength="50" required>
+                    <label class="form-label">🏠 Strada *</label>
+                    <select class="form-select" id="address" required>
+                        <option value="">Alege strada...</option>
+                        <!-- Strazile vor fi adăugate dinamic în ordine alfabetică -->
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -858,6 +862,16 @@
         const ADMIN_PASSWORD = window.ADMIN_PASSWORD || 'colind2025';
         const ICONS = ['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'];
         
+        // Lista strazilor predefinite - în ordine alfabetică
+        const PREDEFINED_STREETS = [
+            "Dafinului",
+            "Lujerului", 
+            "Mesteacănului",
+            "Nuferilor",
+            "Ulmilor"
+            // Poți adăuga mai multe străzi aici ulterior
+        ].sort(); // Sortează alfabetic
+        
         let map;
         let markers = [];
         let pins = [];
@@ -872,6 +886,7 @@
             initFirebase();
             initMap();
             initIconGrid();
+            initStreetDropdown();
             setupEventListeners();
             checkScreenSize();
             
@@ -938,19 +953,21 @@
             // Inițializare hartă Leaflet
             map = L.map('map').setView([44.545593, 25.931531], 17);
             
-            // Folosim OpenStreetMap HOT (Humanitarian) care are mai multe detalii despre clădiri
-            L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a>',
+            // Folosim OpenStreetMap standard cu un stil care arată mai bine clădirile
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
             
-            // Adăugăm și un layer pentru clădiri (dacă este disponibil în zonă)
+            // Adăugăm un layer pentru clădiri (dacă este disponibil)
             try {
-                L.tileLayer('https://tiles.wmflabs.org/osm-no-labels/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                // Acest layer poate afișa clădirile mai clar
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 20
                 }).addTo(map);
             } catch (e) {
-                console.log("Layer-ul pentru clădiri nu este disponibil în această zonă");
+                console.log("Layer-ul pentru clădiri nu este disponibil");
             }
             
             // Eveniment pentru click pe hartă
@@ -998,6 +1015,40 @@
                 btn.onclick = () => selectIcon(icon);
                 if (icon === selectedIcon) btn.classList.add('selected');
                 grid.appendChild(btn);
+            });
+        }
+        
+        function initStreetDropdown() {
+            const dropdown = document.getElementById('address');
+            dropdown.innerHTML = '<option value="">Alege strada...</option>';
+            
+            PREDEFINED_STREETS.forEach(street => {
+                const option = document.createElement('option');
+                option.value = street;
+                option.textContent = street;
+                dropdown.appendChild(option);
+            });
+            
+            // Adaugă opțiunea pentru alte străzi
+            const otherOption = document.createElement('option');
+            otherOption.value = 'other';
+            otherOption.textContent = 'Altă stradă...';
+            dropdown.appendChild(otherOption);
+            
+            // Eveniment pentru când se selectează "Altă stradă"
+            dropdown.addEventListener('change', function() {
+                if (this.value === 'other') {
+                    // Înlocuiește dropdown-ul cu un input
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'form-input';
+                    input.id = 'address-other';
+                    input.placeholder = 'Introdu numele străzii';
+                    input.required = true;
+                    
+                    this.parentNode.replaceChild(input, this);
+                    input.focus();
+                }
             });
         }
         
@@ -1098,6 +1149,7 @@
             clickedLocation = null;
             selectedIcon = '🎄';
             initIconGrid();
+            initStreetDropdown(); // Resetează dropdown-ul străzilor
             
             if (window.tempMarker) {
                 window.tempMarker.remove();
@@ -1128,12 +1180,18 @@
             closeError();
             
             const name = document.getElementById('name').value.trim();
-            const address = document.getElementById('address').value.trim();
+            let address = '';
             const streetNumber = document.getElementById('streetNumber').value.trim();
+            
+            // Verifică dacă este dropdown sau input pentru stradă
+            const addressElement = document.getElementById('address') || document.getElementById('address-other');
+            if (addressElement) {
+                address = addressElement.value.trim();
+            }
             
             const missingFields = [];
             if (!name) missingFields.push('Nume Familie');
-            if (!address) missingFields.push('Denumire Stradă');
+            if (!address) missingFields.push('Stradă');
             if (!streetNumber) missingFields.push('Număr Poștal');
             
             if (missingFields.length > 0) {
