@@ -22,6 +22,8 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         #header {
@@ -31,6 +33,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
             z-index: 1000;
+            flex-shrink: 0;
         }
         
         #header-content {
@@ -78,11 +81,20 @@
             padding: 0.5rem 1rem;
             font-size: 0.75rem;
             color: #92400e;
+            flex-shrink: 0;
+        }
+        
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
         }
         
         #map-container {
             position: relative;
-            height: calc(100vh - 110px);
+            flex: 1;
             width: 100%;
         }
         
@@ -91,125 +103,94 @@
             height: 100%;
         }
         
-        .btn {
-            padding: 0.75rem 1.25rem;
-            border: none;
-            border-radius: 9999px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-            white-space: nowrap;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(to right, #dc2626, #16a34a);
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-        }
-        
-        .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 15px -3px rgba(0,0,0,0.3);
-        }
-        
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #374151;
-        }
-        
-        .btn-secondary:hover {
-            background: #d1d5db;
-        }
-        
-        /* BUTOANE FIXATE PE MOBIL */
-        #mobile-controls {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-        
-        #add-btn-mobile {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
-            background: linear-gradient(to right, #dc2626, #16a34a);
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-        }
-        
-        #location-btn-mobile {
-            width: 3.5rem;
-            height: 3.5rem;
-            border-radius: 50%;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            font-size: 1.25rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-        }
-        
-        /* BUTON PC - CORECTAT */
+        /* BUTON PC - CORECTAT COMPLET */
         #add-btn-pc {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+            position: fixed; /* Schimbat de la absolute la fixed */
+            top: 120px; /* Poziționat sub header */
+            right: 20px;
             z-index: 1000;
             background: linear-gradient(135deg, #dc2626, #16a34a);
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 12px 24px;
+            padding: 14px 28px;
             font-size: 16px;
-            font-weight: 600;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         
         #add-btn-pc:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
             background: linear-gradient(135deg, #b91c1c, #15803d);
         }
         
         #add-btn-pc:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+        }
+        
+        /* BUTOANE FIXATE PE MOBIL */
+        #mobile-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        #add-btn-mobile {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc2626, #16a34a);
+            color: white;
+            border: none;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        #add-btn-mobile:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        
+        #location-btn-mobile {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        #location-btn-mobile:hover {
+            transform: scale(1.1);
+            background: #2563eb;
         }
         
         .modal {
@@ -228,11 +209,13 @@
         }
         
         .modal-add {
-            top: 2rem;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .modal-view {
-            top: 2rem;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
         
         .modal-header {
@@ -436,9 +419,9 @@
         }
         
         .connection-status {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
+            position: fixed;
+            top: 90px;
+            left: 20px;
             z-index: 999;
             padding: 0.5rem 1rem;
             border-radius: 9999px;
@@ -449,21 +432,22 @@
             gap: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
             background: rgba(255,255,255,0.95);
+            border: 1px solid #e5e7eb;
         }
         
         .connection-status.connected {
             color: #166534;
-            border: 1px solid #bbf7d0;
+            border-color: #bbf7d0;
         }
         
         .connection-status.disconnected {
             color: #991b1b;
-            border: 1px solid #fca5a5;
+            border-color: #fca5a5;
         }
         
         .toast {
             position: fixed;
-            top: 1rem;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 3000;
@@ -511,8 +495,31 @@
             backdrop-filter: blur(4px);
         }
         
-        /* Tablet și desktop */
+        /* Ascunde butonul PC pe mobil */
+        @media (max-width: 767px) {
+            #add-btn-pc {
+                display: none !important;
+            }
+            
+            #mobile-controls {
+                display: flex;
+            }
+        }
+        
+        /* Afișează butonul PC pe desktop */
         @media (min-width: 768px) {
+            #add-btn-pc {
+                display: flex !important;
+            }
+            
+            #mobile-controls {
+                display: none;
+            }
+            
+            #header p {
+                display: block;
+            }
+            
             #header {
                 padding: 1rem;
             }
@@ -521,81 +528,9 @@
                 font-size: 1.5rem;
             }
             
-            #header p {
-                display: block;
-                font-size: 0.875rem;
-            }
-            
-            #pin-count {
-                padding: 0.5rem 1rem;
-                font-size: 1rem;
-            }
-            
             #instructions {
                 padding: 0.75rem 1rem;
                 font-size: 0.875rem;
-            }
-            
-            #map-container {
-                height: calc(100vh - 140px);
-            }
-            
-            #mobile-controls {
-                display: none;
-            }
-            
-            #add-btn-pc {
-                display: flex;
-            }
-            
-            .modal {
-                position: absolute;
-                transform: none;
-                width: 24rem;
-                max-width: none;
-            }
-            
-            .modal-add {
-                top: 1rem;
-                right: 1rem;
-                left: auto;
-            }
-            
-            .modal-view {
-                bottom: 1rem;
-                left: 1rem;
-                top: auto;
-            }
-        }
-        
-        /* Orientare landscape pe mobil */
-        @media (max-height: 500px) and (orientation: landscape) {
-            #header {
-                padding: 0.5rem 1rem;
-            }
-            
-            #header h1 {
-                font-size: 1.1rem;
-            }
-            
-            #instructions {
-                display: none;
-            }
-            
-            #map-container {
-                height: calc(100vh - 80px);
-            }
-            
-            .modal {
-                max-height: 70vh;
-                top: 1rem;
-            }
-        }
-
-        /* Ascunde butonul PC pe mobil */
-        @media (max-width: 767px) {
-            #add-btn-pc {
-                display: none !important;
             }
         }
     </style>
@@ -625,21 +560,18 @@
         </div>
     </div>
 
-    <div id="map-container">
-        <div id="map"></div>
-        
-        <div id="connection-status" class="connection-status hidden">
-            <span class="status-icon"></span>
-            <span class="status-text"></span>
+    <div id="main-container">
+        <div id="map-container">
+            <div id="map"></div>
         </div>
         
-        <!-- Buton PC (afisat doar pe desktop) -->
+        <!-- BUTON PC - ACUM ÎN AFARA CONTAINERULUI HĂRȚII -->
         <button id="add-btn-pc" class="hidden">
-            <span style="font-size: 1.25rem;">+</span>
+            <span style="font-size: 1.5rem; font-weight: bold;">+</span>
             Adaugă Casa Mea
         </button>
         
-        <!-- Butoane mobile (afisate doar pe mobil) -->
+        <!-- Butoane mobile -->
         <div id="mobile-controls">
             <button id="location-btn-mobile" title="Centrare hartă">
                 📍
@@ -647,6 +579,11 @@
             <button id="add-btn-mobile" title="Adaugă casă">
                 +
             </button>
+        </div>
+        
+        <div id="connection-status" class="connection-status hidden">
+            <span class="status-icon"></span>
+            <span class="status-text"></span>
         </div>
         
         <!-- Overlay pentru modale -->
@@ -791,7 +728,6 @@
             setupEventListeners();
             checkScreenSize();
             
-            // Ascultă pentru schimbări de dimensiune ale ecranului
             window.addEventListener('resize', checkScreenSize);
         }
         
@@ -805,14 +741,9 @@
         }
         
         function setupEventListeners() {
-            // Buton PC
             document.getElementById('add-btn-pc').addEventListener('click', openAddModal);
-            
-            // Butoane mobile
             document.getElementById('add-btn-mobile').addEventListener('click', openAddModal);
             document.getElementById('location-btn-mobile').addEventListener('click', centerMap);
-            
-            // Overlay pentru închidere modală
             document.getElementById('modal-overlay').addEventListener('click', closeAllModals);
         }
         
@@ -868,7 +799,6 @@
                 maxZoom: 19
             }).addTo(map);
             
-            // Prevenim problemele de touch
             L.DomEvent.on(map.getContainer(), 'touchstart', L.DomEvent.stopPropagation);
             
             map.on('click', (e) => {
