@@ -338,6 +338,24 @@
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
         
+        /* Stil special pentru input-ul cu datalist */
+        .street-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #f9fafb;
+        }
+        
+        .street-input:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
         .icon-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -778,10 +796,7 @@
                 <div class="form-group">
                     <label class="form-label">🏠 Strada *</label>
                     <div id="street-container">
-                        <select class="form-select" id="address" required>
-                            <option value="">Alege strada...</option>
-                            <!-- Strazile vor fi adăugate dinamic în ordine alfabetică -->
-                        </select>
+                        <!-- Aici va fi adăugat input-ul cu datalist -->
                     </div>
                 </div>
                 
@@ -883,7 +898,7 @@
             "Trestiei",
             "Trifoiului",
             "Ulmului"
-        ].sort(); // Sortează alfabetic
+        ].sort();
         
         let map;
         let markers = [];
@@ -899,7 +914,7 @@
             initFirebase();
             initMap();
             initIconGrid();
-            initStreetDropdown();
+            initStreetInput();
             setupEventListeners();
             checkScreenSize();
             
@@ -953,28 +968,22 @@
             
             if (isConnected) {
                 statusElement.className = 'connection-status connected';
-                // Bradul se luminează automat prin CSS
             } else {
                 statusElement.className = 'connection-status disconnected';
-                // Bradul stă cu luminile stinse
             }
             
             statusElement.classList.remove('hidden');
         }
         
         function initMap() {
-            // Inițializare hartă Leaflet
             map = L.map('map').setView([44.545593, 25.931531], 17);
             
-            // Folosim OpenStreetMap standard cu un stil care arată mai bine clădirile
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
             
-            // Adăugăm un layer pentru clădiri (dacă este disponibil)
             try {
-                // Acest layer poate afișa clădirile mai clar
                 L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 20
@@ -983,7 +992,6 @@
                 console.log("Layer-ul pentru clădiri nu este disponibil");
             }
             
-            // Eveniment pentru click pe hartă
             map.on('click', (e) => {
                 clickedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
                 
@@ -1031,51 +1039,32 @@
             });
         }
         
-        function initStreetDropdown() {
+        function initStreetInput() {
             const container = document.getElementById('street-container');
-            container.innerHTML = ''; // Curăță containerul
+            container.innerHTML = '';
             
-            const dropdown = document.createElement('select');
-            dropdown.className = 'form-select';
-            dropdown.id = 'address';
-            dropdown.required = true;
-            
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Alege strada...';
-            dropdown.appendChild(defaultOption);
+            // Creează datalist-ul cu toate străzile
+            const datalist = document.createElement('datalist');
+            datalist.id = 'streets-list';
             
             PREDEFINED_STREETS.forEach(street => {
                 const option = document.createElement('option');
                 option.value = street;
-                option.textContent = street;
-                dropdown.appendChild(option);
+                datalist.appendChild(option);
             });
             
-            // Adaugă opțiunea pentru alte străzi
-            const otherOption = document.createElement('option');
-            otherOption.value = 'other';
-            otherOption.textContent = 'Altă stradă...';
-            dropdown.appendChild(otherOption);
+            // Creează input-ul care folosește datalist-ul
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'street-input';
+            input.id = 'address';
+            input.placeholder = 'Începe să tastezi numele străzii...';
+            input.setAttribute('list', 'streets-list');
+            input.required = true;
+            input.autocomplete = 'off';
             
-            container.appendChild(dropdown);
-            
-            // Eveniment pentru când se selectează "Altă stradă"
-            dropdown.addEventListener('change', function() {
-                if (this.value === 'other') {
-                    // Înlocuiește dropdown-ul cu un input
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.className = 'form-input';
-                    input.id = 'address-other';
-                    input.placeholder = 'Introdu numele străzii';
-                    input.required = true;
-                    
-                    container.innerHTML = ''; // Curăță containerul
-                    container.appendChild(input);
-                    input.focus();
-                }
-            });
+            container.appendChild(input);
+            container.appendChild(datalist);
         }
         
         function selectIcon(icon) {
@@ -1165,8 +1154,7 @@
                 return;
             }
             showModal('add-modal');
-            // Asigură-te că lista de străzi este resetată corect
-            initStreetDropdown();
+            initStreetInput(); // Resetează input-ul de stradă
         }
         
         function closeAddModal() {
@@ -1176,7 +1164,7 @@
             clickedLocation = null;
             selectedIcon = '🎄';
             initIconGrid();
-            initStreetDropdown(); // Resetează dropdown-ul străzilor
+            initStreetInput(); // Resetează input-ul de stradă
             
             if (window.tempMarker) {
                 window.tempMarker.remove();
@@ -1207,14 +1195,8 @@
             closeError();
             
             const name = document.getElementById('name').value.trim();
-            let address = '';
+            const address = document.getElementById('address').value.trim();
             const streetNumber = document.getElementById('streetNumber').value.trim();
-            
-            // Verifică dacă este dropdown sau input pentru stradă
-            const addressElement = document.getElementById('address') || document.getElementById('address-other');
-            if (addressElement) {
-                address = addressElement.value.trim();
-            }
             
             const missingFields = [];
             if (!name) missingFields.push('Nume Familie');
