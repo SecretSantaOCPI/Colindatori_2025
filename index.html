@@ -347,7 +347,7 @@
             position: absolute;
             top: 1rem;
             left: 1rem;
-            z-index: 9999;
+            z-index: 999;
             padding: 0.5rem 1rem;
             border-radius: 9999px;
             font-size: 0.875rem;
@@ -406,6 +406,28 @@
             }
         }
         
+        /* Soluții pentru problemele identificate */
+        
+        /* 1. Butonul "Adaugă Casa Mea" accesibil pe mobil în portrait */
+        #add-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 999;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        /* 2. Corecție pentru modal-ul de ștergere pe PC */
+        #view-content {
+            display: block !important;
+        }
+        
+        /* 3. Poziționare buton de conectare pentru a nu acoperi controalele de zoom */
+        .connection-status {
+            top: 4.5rem;
+            left: 0.5rem;
+        }
+        
         @media (max-width: 640px) {
             #header h1 {
                 font-size: 1.25rem;
@@ -433,11 +455,13 @@
                 overflow-y: auto;
             }
             
+            /* Butonul "Adaugă Casa Mea" mai mic și mai bine poziționat pe mobil */
             #add-btn {
                 top: 0.5rem !important;
                 right: 0.5rem !important;
                 padding: 0.5rem 1rem !important;
                 font-size: 0.875rem !important;
+                z-index: 999 !important;
             }
             
             .form-input, .form-textarea {
@@ -455,11 +479,24 @@
                 border-top: 2px solid #dc2626;
             }
             
+            /* Butonul de conectare mai mic pe mobil */
             .connection-status {
-                top: 0.5rem;
+                top: 4rem;
                 left: 0.5rem;
                 font-size: 0.75rem;
                 padding: 0.375rem 0.75rem;
+            }
+        }
+        
+        @media (max-width: 480px) and (orientation: portrait) {
+            /* Ajustări suplimentare pentru telefoane mici în portrait */
+            #add-btn {
+                padding: 0.4rem 0.8rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.2rem;
             }
         }
     </style>
@@ -497,7 +534,7 @@
             <span class="status-text"></span>
         </div>
         
-        <button id="add-btn" class="btn btn-primary" style="position: absolute; top: 1rem; right: 1rem; z-index: 9999;">
+        <button id="add-btn" class="btn btn-primary">
             <span style="font-size: 1.25rem;">+</span>
             Adaugă Casa Mea
         </button>
@@ -947,20 +984,26 @@
             document.getElementById('view-modal').classList.remove('hidden');
             document.getElementById('delete-form').classList.add('hidden');
             document.getElementById('add-modal').classList.add('hidden');
+            
+            // Resetăm starea pentru a preveni problema cu afișarea pe PC
+            document.getElementById('view-content').style.display = 'block';
         }
         
         function closeViewModal() {
             document.getElementById('view-modal').classList.add('hidden');
             selectedPin = null;
+            // Asigurăm că conținutul este vizibil pentru următoarea deschidere
+            document.getElementById('view-content').style.display = 'block';
+            document.getElementById('delete-form').classList.add('hidden');
         }
         
         function showDeleteForm() {
-            document.getElementById('view-content').classList.add('hidden');
+            document.getElementById('view-content').style.display = 'none';
             document.getElementById('delete-form').classList.remove('hidden');
         }
         
         function closeDeleteForm() {
-            document.getElementById('view-content').classList.remove('hidden');
+            document.getElementById('view-content').style.display = 'block';
             document.getElementById('delete-form').classList.add('hidden');
             document.getElementById('delete-password').value = '';
         }
