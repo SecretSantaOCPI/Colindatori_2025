@@ -357,7 +357,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* REMOVED the font-family that was forcing black text */
         }
         
         .icon-btn:hover {
@@ -778,10 +777,12 @@
                 
                 <div class="form-group">
                     <label class="form-label">🏠 Strada *</label>
-                    <select class="form-select" id="address" required>
-                        <option value="">Alege strada...</option>
-                        <!-- Strazile vor fi adăugate dinamic în ordine alfabetică -->
-                    </select>
+                    <div id="street-container">
+                        <select class="form-select" id="address" required>
+                            <option value="">Alege strada...</option>
+                            <!-- Strazile vor fi adăugate dinamic în ordine alfabetică -->
+                        </select>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -864,12 +865,24 @@
         
         // Lista strazilor predefinite - în ordine alfabetică
         const PREDEFINED_STREETS = [
+            "Catinei",
+            "Ciocarliei",
+            "Codrului",
             "Dafinului",
-            "Lujerului", 
-            "Mesteacănului",
+            "Dropiei",
+            "Frasinului",
+            "Gutuiului",
+            "Lujerului",
+            "Macesului",
+            "Magnoliei",
+            "Mesteacanului",
             "Nuferilor",
-            "Ulmilor"
-            // Poți adăuga mai multe străzi aici ulterior
+            "Porumbacului",
+            "Salbiei",
+            "Salciei",
+            "Trestiei",
+            "Trifoiului",
+            "Ulmului"
         ].sort(); // Sortează alfabetic
         
         let map;
@@ -1019,8 +1032,18 @@
         }
         
         function initStreetDropdown() {
-            const dropdown = document.getElementById('address');
-            dropdown.innerHTML = '<option value="">Alege strada...</option>';
+            const container = document.getElementById('street-container');
+            container.innerHTML = ''; // Curăță containerul
+            
+            const dropdown = document.createElement('select');
+            dropdown.className = 'form-select';
+            dropdown.id = 'address';
+            dropdown.required = true;
+            
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Alege strada...';
+            dropdown.appendChild(defaultOption);
             
             PREDEFINED_STREETS.forEach(street => {
                 const option = document.createElement('option');
@@ -1035,6 +1058,8 @@
             otherOption.textContent = 'Altă stradă...';
             dropdown.appendChild(otherOption);
             
+            container.appendChild(dropdown);
+            
             // Eveniment pentru când se selectează "Altă stradă"
             dropdown.addEventListener('change', function() {
                 if (this.value === 'other') {
@@ -1046,7 +1071,8 @@
                     input.placeholder = 'Introdu numele străzii';
                     input.required = true;
                     
-                    this.parentNode.replaceChild(input, this);
+                    container.innerHTML = ''; // Curăță containerul
+                    container.appendChild(input);
                     input.focus();
                 }
             });
@@ -1139,7 +1165,8 @@
                 return;
             }
             showModal('add-modal');
-            document.getElementById('location-success').classList.remove('hidden');
+            // Asigură-te că lista de străzi este resetată corect
+            initStreetDropdown();
         }
         
         function closeAddModal() {
