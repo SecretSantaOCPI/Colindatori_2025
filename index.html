@@ -4,18 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Colindători Bine Veniți - Cartier Tineri Buftea</title>
-    
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    
-    <!-- Leaflet Google Mutant Plugin -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.css" />
-    
-    <!-- Leaflet JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    
-    <!-- Leaflet Google Mutant Plugin JS -->
-    <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -948,9 +938,11 @@
             // Inițializare hartă Leaflet
             map = L.map('map').setView([44.545593, 25.931531], 17);
             
-            // Adăugare Google Maps folosind Leaflet.GoogleMutant
-            L.gridLayer.googleMutant({
-                type: 'hybrid' // 'roadmap', 'satellite', 'terrain', 'hybrid'
+            // Folosim CartoDB Voyager care arată foarte bine clădirile
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
             }).addTo(map);
             
             // Eveniment pentru click pe hartă
