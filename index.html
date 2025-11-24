@@ -343,6 +343,69 @@
             border-top: 2px solid #e5e7eb;
         }
         
+        .connection-status {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            z-index: 9999;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .connection-status.connected {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .connection-status.disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .toast.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .toast.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -100%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+        
         @media (max-width: 640px) {
             #header h1 {
                 font-size: 1.25rem;
@@ -391,6 +454,13 @@
                 margin-top: 1rem;
                 border-top: 2px solid #dc2626;
             }
+            
+            .connection-status {
+                top: 0.5rem;
+                left: 0.5rem;
+                font-size: 0.75rem;
+                padding: 0.375rem 0.75rem;
+            }
         }
     </style>
 </head>
@@ -421,6 +491,11 @@
 
     <div id="map-container">
         <div id="map"></div>
+        
+        <div id="connection-status" class="connection-status hidden">
+            <span class="status-icon"></span>
+            <span class="status-text"></span>
+        </div>
         
         <button id="add-btn" class="btn btn-primary" style="position: absolute; top: 1rem; right: 1rem; z-index: 9999;">
             <span style="font-size: 1.25rem;">+</span>
@@ -462,32 +537,32 @@
                 
                 <div class="form-group">
                     <label class="form-label">👤 Nume Familie *</label>
-                    <input type="text" class="form-input" id="name" placeholder="Numele familiei">
+                    <input type="text" class="form-input" id="name" placeholder="Numele familiei" maxlength="50">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">🏠 Denumire Stradă *</label>
-                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă">
+                    <input type="text" class="form-input" id="address" placeholder="Denumire stradă" maxlength="50">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Număr Poștal *</label>
-                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal">
+                    <input type="text" class="form-input" id="streetNumber" placeholder="Număr poștal" maxlength="10">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">🕐 Program preferat</label>
-                    <input type="text" class="form-input" id="schedule" placeholder="Ex: 24 dec, 18:00-21:00">
+                    <input type="text" class="form-input" id="schedule" placeholder="Ex: 24 dec, 18:00-21:00" maxlength="50">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Detalii suplimentare</label>
-                    <textarea class="form-textarea" id="notes" rows="3" placeholder="Ex: Sunați la interfon, poartă verde"></textarea>
+                    <textarea class="form-textarea" id="notes" rows="3" placeholder="Ex: Sunați la interfon, poartă verde" maxlength="200"></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Parolă pentru ștergere (opțional)</label>
-                    <input type="password" class="form-input" id="password" placeholder="Setează o parolă">
+                    <input type="password" class="form-input" id="password" placeholder="Setează o parolă" maxlength="20">
                     <p class="hint-text">💡 Doar tu vei putea șterge pin-ul cu această parolă</p>
                 </div>
                 
@@ -539,6 +614,7 @@
     </div>
 
     <script>
+        // Configurație Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyD4j5pOuXalnS-TErmivkJEa-4ki5e_x6s",
             authDomain: "colindatori-buftea.firebaseapp.com",
@@ -549,10 +625,9 @@
             appId: "1:386078081254:web:8625f492e1a110fa257b27"
         };
         
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        
-        const ADMIN_PASSWORD = 'colind2025';
+        // Încercăm să obținem parola de admin din variabila de mediu sau folosim o valoare implicită
+        // NOTĂ: În producție, această logică ar trebui să fie pe server
+        const ADMIN_PASSWORD = window.ADMIN_PASSWORD || 'colind2025';
         const ICONS = ['🎄', '🍬', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️'];
         
         let map;
@@ -561,14 +636,53 @@
         let selectedIcon = '🎄';
         let clickedLocation = null;
         let selectedPin = null;
+        let isConnected = false;
         
         document.addEventListener('DOMContentLoaded', init);
         
         function init() {
+            initFirebase();
             initMap();
             initIconGrid();
-            loadPins();
             document.getElementById('add-btn').addEventListener('click', openAddModal);
+        }
+        
+        function initFirebase() {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                const database = firebase.database();
+                
+                // Monitorizăm starea conexiunii
+                const connectedRef = database.ref(".info/connected");
+                connectedRef.on("value", function(snap) {
+                    isConnected = snap.val() === true;
+                    updateConnectionStatus();
+                });
+                
+                // Încărcăm pin-urile
+                loadPins();
+            } catch (error) {
+                console.error("Eroare la inițializarea Firebase:", error);
+                showToast("Eroare de conexiune cu baza de date", "error");
+            }
+        }
+        
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connection-status');
+            const statusIcon = statusElement.querySelector('.status-icon');
+            const statusText = statusElement.querySelector('.status-text');
+            
+            if (isConnected) {
+                statusElement.className = 'connection-status connected';
+                statusIcon.textContent = '✓';
+                statusText.textContent = 'Conectat';
+            } else {
+                statusElement.className = 'connection-status disconnected';
+                statusIcon.textContent = '⚠️';
+                statusText.textContent = 'Deconectat';
+            }
+            
+            statusElement.classList.remove('hidden');
         }
         
         function initMap() {
@@ -578,6 +692,9 @@
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
             }).addTo(map);
+            
+            // Adăugăm un layer pentru a preveni problemele de touch pe dispozitive mobile
+            L.DomEvent.on(map.getContainer(), 'touchstart', L.DomEvent.stopPropagation);
             
             map.on('click', (e) => {
                 clickedLocation = { lat: e.latlng.lat, lng: e.latlng.lng };
@@ -600,10 +717,18 @@
                 }
             });
             
+            // Reîncărcăm dimensiunile hărții după un scurt delay pentru a preveni problemele de randare
             setTimeout(() => {
                 map.invalidateSize();
                 document.getElementById('loading').classList.add('hidden');
-            }, 100);
+            }, 300);
+            
+            // Reîncărcăm dimensiunile hărții la redimensionarea ferestrei
+            window.addEventListener('resize', () => {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            });
         }
         
         function initIconGrid() {
@@ -628,14 +753,23 @@
         }
         
         function loadPins() {
-            database.ref('pins').on('value', (snapshot) => {
-                pins = [];
-                snapshot.forEach((child) => {
-                    pins.push({ id: child.key, ...child.val() });
+            try {
+                const database = firebase.database();
+                database.ref('pins').on('value', (snapshot) => {
+                    pins = [];
+                    snapshot.forEach((child) => {
+                        pins.push({ id: child.key, ...child.val() });
+                    });
+                    updateMap();
+                    updatePinCount();
+                }, (error) => {
+                    console.error("Eroare la încărcarea pin-urilor:", error);
+                    showToast("Eroare la încărcarea datelor", "error");
                 });
-                updateMap();
-                updatePinCount();
-            });
+            } catch (error) {
+                console.error("Eroare la încărcarea pin-urilor:", error);
+                showToast("Eroare la încărcarea datelor", "error");
+            }
         }
         
         function updateMap() {
@@ -680,9 +814,21 @@
             document.getElementById('error-message').classList.add('hidden');
         }
         
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
         function openAddModal() {
             if (!clickedLocation) {
-                alert('⚠️ Mai întâi dă click pe hartă unde vrei să adaugi casa!');
+                showToast('⚠️ Mai întâi dă click pe hartă unde vrei să adaugi casa!', 'error');
                 return;
             }
             document.getElementById('add-modal').classList.remove('hidden');
@@ -728,6 +874,11 @@
                 return;
             }
             
+            if (!isConnected) {
+                showError('Nu ești conectat la internet. Te rog verifică conexiunea și încearcă din nou.');
+                return;
+            }
+            
             const pinData = {
                 name,
                 address,
@@ -741,21 +892,27 @@
                 timestamp: new Date().toISOString()
             };
             
-            database.ref('pins').push(pinData)
-                .then(() => {
-                    closeAddModal();
-                    
-                    if (window.tempMarker) {
-                        window.tempMarker.remove();
-                        window.tempMarker = null;
-                    }
-                    
-                    alert('✅ Casă adăugată cu succes!');
-                })
-                .catch((error) => {
-                    console.error('Save error:', error);
-                    showError('Eroare la salvare: ' + error.message);
-                });
+            try {
+                const database = firebase.database();
+                database.ref('pins').push(pinData)
+                    .then(() => {
+                        closeAddModal();
+                        
+                        if (window.tempMarker) {
+                            window.tempMarker.remove();
+                            window.tempMarker = null;
+                        }
+                        
+                        showToast('✅ Casă adăugată cu succes!');
+                    })
+                    .catch((error) => {
+                        console.error('Save error:', error);
+                        showError('Eroare la salvare: ' + error.message);
+                    });
+            } catch (error) {
+                console.error('Save error:', error);
+                showError('Eroare la salvare: ' + error.message);
+            }
         }
         
         function showPin(pin) {
@@ -814,7 +971,7 @@
             const password = document.getElementById('delete-password').value;
             
             if (!password) {
-                alert('Te rog introdu parola!');
+                showToast('Te rog introdu parola!', 'error');
                 return;
             }
             
@@ -822,20 +979,26 @@
             const isOwner = selectedPin.password && password === selectedPin.password;
             
             if (!isAdmin && !isOwner) {
-                alert('❌ Parolă incorectă!');
+                showToast('❌ Parolă incorectă!', 'error');
                 document.getElementById('delete-password').value = '';
                 return;
             }
             
-            database.ref('pins/' + selectedPin.id).remove()
-                .then(() => {
-                    closeViewModal();
-                    alert('✅ Pin șters cu succes!');
-                })
-                .catch((error) => {
-                    console.error('Delete error:', error);
-                    alert('Eroare la ștergere: ' + error.message);
-                });
+            try {
+                const database = firebase.database();
+                database.ref('pins/' + selectedPin.id).remove()
+                    .then(() => {
+                        closeViewModal();
+                        showToast('✅ Pin șters cu succes!');
+                    })
+                    .catch((error) => {
+                        console.error('Delete error:', error);
+                        showToast('Eroare la ștergere: ' + error.message, 'error');
+                    });
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast('Eroare la ștergere: ' + error.message, 'error');
+            }
         }
     </script>
 </body>
