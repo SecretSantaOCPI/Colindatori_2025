@@ -1085,15 +1085,19 @@
         }
         // === FUNCȚIE SHARE WHATSAPP CORECTATĂ ===
         function shareOnWhatsApp() {
-            const text = `🎄 Colindători Bine Veniți în Cartierul Tineri, Buftea! 🎅\n\n` +
-                        `Harta cu casele care primesc colindători.\n` +
-                        `Adaugă și casa ta: ${window.location.href}`;
+            const text = '🎄 Colindatori Bine Veniti! 🎅\n\nHarta caselor care primesc colindatori.\nAdauga si casa ta: ' + window.location.href;
             
-            // Folosește encodeURIComponent pentru a codifica corect emoji-urile
-            const encodedText = encodeURIComponent(text);
-            const whatsappUrl = `https://wa.me/?text=${encodedText}`;
-            
-            window.open(whatsappUrl, '_blank');
+            // Folosește API-ul nativ de share dacă e disponibil (pe mobil)
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Colindatori Buftea',
+                    text: text
+                }).catch(err => console.log('Share error:', err));
+            } else {
+                // Fallback pentru desktop
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                window.open(whatsappUrl, '_blank');
+            }
         }
         
         function centerToCartier() {
