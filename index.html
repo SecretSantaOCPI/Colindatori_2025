@@ -133,9 +133,9 @@
         
         /* BUTON ADAUGA CASA - DREAPTA */
         #add-btn-right {
-            width: 60px;
+            min-width: 60px;
             height: 60px;
-            border-radius: 50%;
+            border-radius: 30px;
             background: linear-gradient(135deg, #dc2626, #16a34a);
             color: white;
             border: none;
@@ -147,6 +147,14 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            padding: 0 20px;
+            gap: 8px;
+        }
+        
+        .btn-text {
+            font-size: 16px;
+            font-weight: 600;
+            display: none;
         }
         
         #add-btn-right:hover {
@@ -156,9 +164,9 @@
 
         /* BUTON SHARE - DREAPTA */
         #share-btn-right {
-            width: 60px;
+            min-width: 60px;
             height: 60px;
-            border-radius: 50%;
+            border-radius: 30px;
             background: #25d366;
             color: white;
             border: none;
@@ -169,6 +177,8 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            padding: 0 20px;
+            gap: 8px;
         }
         
         #share-btn-right:hover {
@@ -189,9 +199,9 @@
         
         /* BUTON CENTRARE STANGA */
         #center-btn {
-            width: 60px;
+            min-width: 60px;
             height: 60px;
-            border-radius: 50%;
+            border-radius: 30px;
             background: #8b5cf6;
             color: white;
             border: none;
@@ -202,6 +212,8 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            padding: 0 20px;
+            gap: 8px;
         }
         
         #center-btn:hover {
@@ -211,9 +223,9 @@
 
         /* BUTON GPS STANGA */
         #gps-btn {
-            width: 60px;
+            min-width: 60px;
             height: 60px;
-            border-radius: 50%;
+            border-radius: 30px;
             background: #10b981;
             color: white;
             border: none;
@@ -224,6 +236,8 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            padding: 0 20px;
+            gap: 8px;
         }
         
         #gps-btn:hover {
@@ -964,9 +978,19 @@
                 width: 18px;
                 height: 18px;
             }
+            
+            /* Pe mobil, butoanele sunt doar cu iconițe */
+            #add-btn-right, #share-btn-right, #center-btn, #gps-btn {
+                width: 60px;
+                padding: 0;
+            }
+            
+            .btn-text {
+                display: none !important;
+            }
         }
         
-        /* Pe desktop, bradul mai sus */
+        /* Pe desktop, bradul mai sus și butoane cu text */
         @media (min-width: 768px) {
             #header p {
                 display: block;
@@ -988,6 +1012,15 @@
             .connection-status {
                 top: 140px;
                 right: 30px;
+            }
+            
+            /* Pe desktop, butoanele au și text */
+            .btn-text {
+                display: block;
+            }
+            
+            #add-btn-right, #share-btn-right, #center-btn, #gps-btn {
+                min-width: 180px;
             }
         }
     </style>
@@ -1026,9 +1059,11 @@
         <div id="left-controls">
             <button id="center-btn" title="Centrare hartă pe Cartierul Tineri">
                 🏠
+                <span class="btn-text">Centrare</span>
             </button>
             <button id="gps-btn" title="Folosește locația ta actuală">
                 📍
+                <span class="btn-text">Locația mea</span>
             </button>
         </div>
         
@@ -1036,9 +1071,11 @@
         <div id="right-controls">
             <button id="share-btn-right" title="Share pe WhatsApp">
                 📱
+                <span class="btn-text">Share</span>
             </button>
             <button id="add-btn-right" title="Adaugă casă">
                 +
+                <span class="btn-text">Adaugă casă</span>
             </button>
         </div>
         
@@ -1762,10 +1799,10 @@
         function toggleVisited(houseId) {
             if (visitedHouses[houseId]) {
                 delete visitedHouses[houseId];
-                showToast('✅ Casă marcată ca nevizitată');
+                // Eliminat mesajul de debugging
             } else {
                 visitedHouses[houseId] = true;
-                showToast('✅ Casă marcată ca vizitată');
+                // Eliminat mesajul de debugging
             }
             
             localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
@@ -1983,7 +2020,7 @@
                     
                     showToast(`✅ Locație găsită! Precizie: ${Math.round(accuracy)} metri`, 'success');
                     
-                    gpsBtn.innerHTML = '✅';
+                    gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
                     setTimeout(resetGpsButton, 2000);
                     
                     if (!document.getElementById('add-modal').classList.contains('hidden')) {
@@ -2021,7 +2058,7 @@
             const gpsBtn = document.getElementById('gps-btn');
             gpsBtn.disabled = false;
             gpsBtn.classList.remove('loading');
-            gpsBtn.innerHTML = '📍';
+            gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
         }
     </script>
 </body>
