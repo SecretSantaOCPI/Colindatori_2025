@@ -1059,7 +1059,7 @@
         <div id="left-controls">
             <button id="center-btn" title="Centrare hartă pe Cartierul Tineri">
                 🏠
-                <span class="btn-text">Centrare</span>
+                <span class="btn-text">Centrare Hartă</span>
             </button>
             <button id="gps-btn" title="Folosește locația ta actuală">
                 📍
@@ -1215,7 +1215,7 @@
                     <button onclick="showAdminLogin()" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
                         Login Admin
                     </button>
-                    <button onclick="resetAllVisited()" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.5rem 1rem;" id="reset-btn" disabled>
+                    <button onclick="resetAllVisited()" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
                         Reset Vizite
                     </button>
                 </div>
@@ -1370,7 +1370,6 @@
         
         function centerToCartier() {
             map.setView(CARTIER_CENTER, 17);
-            showToast('🏠 Centrat pe Cartierul Tineri');
         }
         
         function isInZone(lat, lng) {
@@ -1414,7 +1413,6 @@
                 const lng = e.latlng.lng;
                 
                 if (!isInZone(lat, lng)) {
-                    showToast('❌ Poți adăuga doar case din Cartierul Tineri!', 'error');
                     return;
                 }
                 
@@ -1497,7 +1495,7 @@
         function validateStreetInput(inputElement) {
             const value = inputElement.value.trim();
             if (value && !PREDEFINED_STREETS.includes(value)) {
-                showToast('⚠️ Strada nu se află în lista străzilor din Cartierul Tineri. Verifică dacă ai scris corect.', 'error');
+                // Mesaj eliminat
             }
         }
         
@@ -1523,13 +1521,10 @@
                     
                     if (isConnected) {
                         loadPins();
-                    } else {
-                        showToast("⚠️ Nu ești conectat la internet", "error");
                     }
                 });
                 
             } catch (error) {
-                showToast("⚠️ Aplicația funcționează offline. Datele vor fi actualizate când reconectezi.", "error");
                 loadDemoData();
             }
         }
@@ -1553,18 +1548,13 @@
                         snapshot.forEach((child) => {
                             pins.push({ id: child.key, ...child.val() });
                         });
-                        showToast(`✅ Încărcat ${pins.length} case`, "success");
-                    } else {
-                        showToast("📭 Nu există case încă adăugate", "error");
                     }
                     updateMap();
                     updatePinCount();
                 }, (error) => {
-                    showToast("⚠️ Nu pot încărca datele. Verifică conexiunea.", "error");
                     loadDemoData();
                 });
             } catch (error) {
-                showToast("⚠️ Eroare la încărcarea datelor", "error");
                 loadDemoData();
             }
         }
@@ -1585,7 +1575,6 @@
             ];
             updateMap();
             updatePinCount();
-            showToast("📱 Mod demo activat - date de test", "error");
         }
         
         function updateMap() {
@@ -1643,7 +1632,7 @@
                 // Adăugăm buton pentru ștergere în tooltip
                 tooltipContent += `
                     <div style="margin-top: 8px; display: flex; gap: 4px;">
-                        <button class="delete-btn" onclick="window.showDeleteConfirm('${pin.id}')">
+                        <button class="delete-btn" onclick="window.deletePinFromMap('${pin.id}')">
                             🗑️ Șterge
                         </button>
                     </div>
@@ -1672,8 +1661,8 @@
             });
         }
         
-        // Funcție globală pentru a afișa modalul de confirmare ștergere
-        window.showDeleteConfirm = function(houseId) {
+        // Funcție globală pentru ștergerea direct din hartă
+        window.deletePinFromMap = function(houseId) {
             const pin = pins.find(p => p.id === houseId);
             if (pin) {
                 selectedPin = pin;
@@ -1695,7 +1684,6 @@
             const password = document.getElementById('delete-confirm-password').value;
             
             if (!password) {
-                showToast('Te rog introdu parola!', 'error');
                 return;
             }
             
@@ -1703,7 +1691,6 @@
             const isOwner = selectedPin.password && password === selectedPin.password;
             
             if (!isAdminUser && !isOwner) {
-                showToast('❌ Parolă incorectă!', 'error');
                 document.getElementById('delete-confirm-password').value = '';
                 return;
             }
@@ -1713,13 +1700,10 @@
                 database.ref('pins/' + selectedPin.id).remove()
                     .then(() => {
                         closeDeleteConfirmModal();
-                        showToast('✅ Pin șters cu succes!');
                     })
                     .catch((error) => {
-                        showToast('Eroare la ștergere: ' + error.message, 'error');
                     });
             } catch (error) {
-                showToast('Eroare la ștergere: ' + error.message, 'error');
             }
         }
         
@@ -1754,7 +1738,6 @@
         
         function openAddModal() {
             if (!clickedLocation) {
-                showToast('⚠️ Mai întâi selectează o locație pe hartă sau folosește butonul GPS!', 'error');
                 return;
             }
             showModal('add-modal');
@@ -1799,10 +1782,8 @@
         function toggleVisited(houseId) {
             if (visitedHouses[houseId]) {
                 delete visitedHouses[houseId];
-                // Eliminat mesajul de debugging
             } else {
                 visitedHouses[houseId] = true;
-                // Eliminat mesajul de debugging
             }
             
             localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
@@ -1815,11 +1796,6 @@
         }
         
         function resetAllVisited() {
-            if (!isAdmin) {
-                showToast('❌ Nu ai permisiunea de a reseta vizitele!', 'error');
-                return;
-            }
-            
             visitedHouses = {};
             localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
             updateMap();
@@ -1828,8 +1804,6 @@
             if (!document.getElementById('list-modal').classList.contains('hidden')) {
                 showListModal();
             }
-            
-            showToast('✅ Toate vizitele au fost resetate!', 'success');
         }
         
         function showAdminLogin() {
@@ -1846,22 +1820,17 @@
             
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
-                document.getElementById('reset-btn').disabled = false;
                 closeAdminLogin();
-                showToast('✅ Login admin reușit!', 'success');
                 updateMap();
                 
                 if (!document.getElementById('list-modal').classList.contains('hidden')) {
                     showListModal();
                 }
-            } else {
-                showToast('❌ Parolă incorectă!', 'error');
             }
         }
         
         function showListModal() {
             if (pins.length === 0) {
-                showToast('📭 Nu există case încă adăugate!', 'error');
                 return;
             }
             
@@ -1884,7 +1853,7 @@
                         <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
                         <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat aici</span>
                     </div>
-                    <button class="delete-btn" onclick="window.showDeleteConfirm('${pin.id}')" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
+                    <button class="delete-btn" onclick="window.deletePinFromMap('${pin.id}')" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
                         🗑️ Șterge
                     </button>
                 `;
@@ -1966,8 +1935,6 @@
                             window.tempMarker.remove();
                             window.tempMarker = null;
                         }
-                        
-                        showToast('✅ Casă adăugată cu succes!');
                     })
                     .catch((error) => {
                         showError('Eroare la salvare: ' + error.message);
@@ -1984,7 +1951,6 @@
             gpsBtn.innerHTML = '⏳';
             
             if (!navigator.geolocation) {
-                showToast('Geolocația nu este suportată de browser-ul tău', 'error');
                 resetGpsButton();
                 return;
             }
@@ -1996,7 +1962,6 @@
                     const accuracy = position.coords.accuracy;
                     
                     if (!isInZone(lat, lng)) {
-                        showToast('❌ Ești în afara Cartierului Tineri! Folosește click pe hartă.', 'error');
                         resetGpsButton();
                         return;
                     }
@@ -2018,8 +1983,6 @@
                     
                     map.setView([lat, lng], 17);
                     
-                    showToast(`✅ Locație găsită! Precizie: ${Math.round(accuracy)} metri`, 'success');
-                    
                     gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
                     setTimeout(resetGpsButton, 2000);
                     
@@ -2028,22 +1991,6 @@
                     }
                 },
                 function(error) {
-                    let errorMessage = 'Eroare la obținerea locației: ';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage += 'Ai refuzat accesul la locație.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage += 'Locația nu este disponibilă.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage += 'Timeout la obținerea locației.';
-                            break;
-                        default:
-                            errorMessage += 'Eroare necunoscută.';
-                            break;
-                    }
-                    showToast(errorMessage, 'error');
                     resetGpsButton();
                 },
                 {
