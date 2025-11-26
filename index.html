@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
     <style>
-        /* Toate stilurile anterioare rămân la fel */
         * {
             margin: 0;
             padding: 0;
@@ -27,9 +26,865 @@
             flex-direction: column;
         }
         
-        /* ... restul stilurilor rămân neschimbate ... */
+        #header {
+            background: linear-gradient(to right, #dc2626, #16a34a);
+            color: white;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+            flex-shrink: 0;
+        }
         
-        /* Adăugăm stil pentru butonul de ștergere în tooltip */
+        #header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        #header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        #header h1 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        #header p {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            display: none;
+        }
+        
+        #pin-count {
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #pin-count:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        #instructions {
+            background: #fef3c7;
+            border-bottom: 2px solid #fcd34d;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: #92400e;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        #instructions-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+        
+        #main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #map-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* GRUP BUTOANE DREAPTA - PC & MOBIL */
+        #right-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* BUTON ADAUGA CASA - DREAPTA */
+        #add-btn-right {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #dc2626, #16a34a);
+            color: white;
+            border: none;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #add-btn-right:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+
+        /* BUTON SHARE - DREAPTA */
+        #share-btn-right {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #25d366;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #share-btn-right:hover {
+            transform: scale(1.1);
+            background: #128C7E;
+        }
+        
+        /* GRUP BUTOANE STANGA */
+        #left-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* BUTON CENTRARE STANGA */
+        #center-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #center-btn:hover {
+            transform: scale(1.1);
+            background: #7c3aed;
+        }
+
+        /* BUTON GPS STANGA */
+        #gps-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #10b981;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #gps-btn:hover {
+            transform: scale(1.1);
+            background: #059669;
+        }
+        
+        #gps-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #gps-btn.loading {
+            background: #f59e0b;
+        }
+
+        /* STILURI BUTOANE MODALE */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #dc2626, #16a34a);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+            transform: scale(1.05);
+        }
+        
+        .modal {
+            position: fixed;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            z-index: 2000;
+            max-height: 85vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90vw;
+            max-width: 500px;
+        }
+        
+        .modal-add {
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .modal-view {
+            top: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 450px;
+        }
+        
+        .modal-list {
+            top: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 500px;
+            max-height: 70vh;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1.25rem 1.25rem 0;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: #6b7280;
+            font-size: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .close-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+            padding: 0 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #f9fafb;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .street-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #f9fafb;
+        }
+        
+        .street-input:focus {
+            outline: none;
+            border-color: #dc2626;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .icon-btn {
+            font-size: 2rem;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            background: #f9fafb;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn:hover {
+            border-color: #fca5a5;
+            transform: scale(1.05);
+        }
+        
+        .icon-btn.selected {
+            background: #fee2e2;
+            border-color: #dc2626;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .success-box {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            border-radius: 0.75rem;
+            padding: 0.75rem;
+            margin: 0 1.25rem 1rem;
+        }
+        
+        .error-box {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin: 0 1.25rem 1rem;
+        }
+        
+        .success-text {
+            font-size: 0.875rem;
+            color: #166534;
+            font-weight: 500;
+        }
+        
+        .error-text {
+            font-size: 0.875rem;
+            color: #991b1b;
+        }
+        
+        .hint-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .pin-detail {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            padding: 0 1.25rem;
+        }
+        
+        .pin-info {
+            flex: 1;
+        }
+        
+        .pin-schedule {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 0.75rem;
+            margin: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+        
+        .pin-notes {
+            background: #fafafa;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            margin: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .divider {
+            border-top: 1px solid #e5e7eb;
+            margin: 1rem 1.25rem;
+            padding-top: 1rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0 1.25rem 1.25rem;
+        }
+        
+        .icon-delete {
+            color: #dc2626;
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-delete:hover {
+            background: #fee2e2;
+        }
+        
+        /* LISTA CASE */
+        .list-container {
+            padding: 0 1.25rem 1.25rem;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+            transition: background 0.2s;
+        }
+        
+        .list-item:hover {
+            background: #f9fafb;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-item.visited {
+            background: #f0fdf4;
+            opacity: 0.7;
+        }
+        
+        .list-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .list-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .list-family {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .list-address {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .list-schedule {
+            font-size: 0.75rem;
+            color: #059669;
+            margin-top: 0.25rem;
+        }
+        
+        .list-notes {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        .checkbox.checked::after {
+            content: "✓";
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .checkbox-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+        
+        .admin-controls {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin: 1rem 1.25rem;
+        }
+        
+        .admin-title {
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .empty-list {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+        
+        #loading {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 4px solid #dc2626;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .submit-btn-container {
+            background: white;
+            padding: 1.25rem;
+            border-top: 2px solid #e5e7eb;
+            position: sticky;
+            bottom: 0;
+        }
+        
+        /* BRAD ANIMAT - FIXAT PE TOATE DISPOZITIVELE */
+        .connection-status {
+            position: fixed;
+            top: 120px;
+            right: 20px;
+            z-index: 999;
+            padding: 0.5rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        
+        .christmas-tree {
+            position: relative;
+            font-size: 24px;
+            text-align: center;
+            animation: tree-float 3s ease-in-out infinite;
+        }
+        
+        .tree-top {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .lights {
+            position: absolute;
+            top: -5px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .light {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff0000;
+            opacity: 0;
+            animation: lights-off 2s infinite;
+        }
+        
+        .connection-status.connected .light {
+            animation: lights-on 1.5s infinite;
+        }
+        
+        .connection-status.connected .light:nth-child(1) { animation-delay: 0s; }
+        .connection-status.connected .light:nth-child(2) { animation-delay: 0.3s; }
+        .connection-status.connected .light:nth-child(3) { animation-delay: 0.6s; }
+        .connection-status.connected .light:nth-child(4) { animation-delay: 0.9s; }
+        
+        @keyframes tree-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        @keyframes lights-on {
+            0%, 100% { 
+                opacity: 1;
+                background: #ff0000;
+                box-shadow: 0 0 10px #ff0000;
+            }
+            25% { 
+                background: #00ff00;
+                box-shadow: 0 0 10px #00ff00;
+            }
+            50% { 
+                background: #ffff00;
+                box-shadow: 0 0 10px #ffff00;
+            }
+            75% { 
+                background: #0000ff;
+                box-shadow: 0 0 10px #0000ff;
+            }
+        }
+        
+        @keyframes lights-off {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.1; }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            animation: slideDown 0.3s ease-out;
+            background: white;
+            border: 2px solid #e5e7eb;
+            max-width: 90vw;
+            text-align: center;
+        }
+        
+        .toast.success {
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+        
+        .toast.error {
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -100%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1999;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Tooltip personalizat pentru informații detaliate */
+        .custom-tooltip {
+            background: white;
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 280px;
+        }
+        
+        .tooltip-family {
+            font-weight: bold;
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tooltip-address {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .tooltip-schedule {
+            font-size: 13px;
+            color: #059669;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .tooltip-notes {
+            font-size: 13px;
+            color: #6b7280;
+            font-style: italic;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        /* Stiluri pentru marker-ele vizitate */
+        .visited-marker {
+            opacity: 0.6;
+            filter: grayscale(0.7) brightness(1.2);
+            transition: all 0.3s ease;
+        }
+        
+        .visited-marker::before {
+            content: "✅";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 16px;
+            background: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        /* Buton ștergere în tooltip */
         .delete-btn {
             background: #dc2626;
             color: white;
@@ -48,7 +903,7 @@
             background: #b91c1c;
         }
         
-        /* Stil pentru modalul de confirmare ștergere */
+        /* Modal confirmare ștergere */
         .delete-confirm-modal {
             max-width: 400px;
         }
@@ -59,14 +914,85 @@
             padding: 0 1.25rem 1.25rem;
         }
         
-        /* Ascundem mesajele de debugging */
-        .debug-message {
-            display: none !important;
+        /* Pe mobil, ajustări de poziționare */
+        @media (max-width: 767px) {
+            .connection-status {
+                top: 110px;
+                right: 10px;
+                padding: 0.4rem;
+            }
+            
+            .christmas-tree {
+                font-size: 20px;
+            }
+            
+            .light {
+                width: 6px;
+                height: 6px;
+            }
+            
+            #instructions {
+                padding: 0.6rem 1rem;
+                font-size: 0.7rem;
+            }
+            
+            .modal {
+                width: 95vw;
+            }
+            
+            #left-controls, #right-controls {
+                bottom: 10px;
+            }
+            
+            #left-controls {
+                left: 10px;
+            }
+            
+            #right-controls {
+                right: 10px;
+            }
+
+            .custom-tooltip {
+                max-width: 250px;
+                padding: 10px;
+            }
+
+            .visited-marker::before {
+                top: -6px;
+                right: -6px;
+                font-size: 14px;
+                width: 18px;
+                height: 18px;
+            }
+        }
+        
+        /* Pe desktop, bradul mai sus */
+        @media (min-width: 768px) {
+            #header p {
+                display: block;
+            }
+            
+            #header {
+                padding: 1rem;
+            }
+            
+            #header h1 {
+                font-size: 1.5rem;
+            }
+            
+            #instructions {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .connection-status {
+                top: 140px;
+                right: 30px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Structura HTML rămâne la fel -->
     <div id="header">
         <div id="header-content">
             <div id="header-title">
@@ -342,7 +1268,7 @@
         const ADMIN_PASSWORD = 'colind2025';
         const ICONS = ['🎄', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️', '🦌', '🧦', '🍪', '🤶', '✨'];
         
-        // STRĂZI CORECTATE - Salviei în loc de Salbiei
+        // STRĂZI CORECTATE
         const PREDEFINED_STREETS = [
             "Catinei", "Ciocarliei", "Codrului", "Dafinului", "Dropiei", 
             "Frasinului", "Gutuiului", "Lujerului", "Macesului", "Magnoliei",
@@ -372,13 +1298,11 @@
         document.addEventListener('DOMContentLoaded', init);
         
         function init() {
-            // Încarcă harta prima dată, apoi Firebase
             initMap();
             initIconGrid();
             initStreetInput();
             setupEventListeners();
             
-            // Încearcă să inițializezi Firebase după ce harta e gata
             setTimeout(() => {
                 initFirebase();
             }, 500);
@@ -393,7 +1317,6 @@
             document.getElementById('modal-overlay').addEventListener('click', closeAllModals);
         }
         
-        // === FUNCȚIE SHARE WHATSAPP ===
         function shareOnWhatsApp() {
             const text = '🎄 Colindatori Bine Veniti! 🎅\n\nHarta caselor care primesc colindatori.\nAdauga si casa ta: ' + window.location.href;
             
@@ -401,8 +1324,6 @@
                 navigator.share({
                     title: 'Colindatori Buftea',
                     text: text
-                }).catch(err => {
-                    // Nu mai afișăm mesaj de eroare în consolă
                 });
             } else {
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -415,7 +1336,6 @@
             showToast('🏠 Centrat pe Cartierul Tineri');
         }
         
-        // === VERIFICARE ZONĂ ===
         function isInZone(lat, lng) {
             let inside = false;
             for (let i = 0, j = ZONE_BOUNDS.length - 1; i < ZONE_BOUNDS.length; j = i++) {
@@ -446,7 +1366,6 @@
                 opacity: 0.8
             }).addTo(map);
             
-            // Adaugă tooltip la poligon
             zonePolygon.bindTooltip('🎄 Cartierul Tineri - Zona Colindători', {
                 permanent: false,
                 direction: 'center',
@@ -554,7 +1473,6 @@
         
         function initFirebase() {
             try {
-                // Verifică dacă Firebase este deja inițializat
                 if (!firebase.apps.length) {
                     firebase.initializeApp(firebaseConfig);
                 }
@@ -567,7 +1485,6 @@
                     updateConnectionStatus();
                     
                     if (isConnected) {
-                        // Eliminat mesajul de debugging
                         loadPins();
                     } else {
                         showToast("⚠️ Nu ești conectat la internet", "error");
@@ -576,8 +1493,6 @@
                 
             } catch (error) {
                 showToast("⚠️ Aplicația funcționează offline. Datele vor fi actualizate când reconectezi.", "error");
-                
-                // Încarcă date demo pentru testare
                 loadDemoData();
             }
         }
@@ -609,7 +1524,7 @@
                     updatePinCount();
                 }, (error) => {
                     showToast("⚠️ Nu pot încărca datele. Verifică conexiunea.", "error");
-                    loadDemoData(); // Încarcă date demo în caz de eroare
+                    loadDemoData();
                 });
             } catch (error) {
                 showToast("⚠️ Eroare la încărcarea datelor", "error");
@@ -617,7 +1532,6 @@
             }
         }
         
-        // Funcție pentru date demo (în caz de eroare Firebase)
         function loadDemoData() {
             pins = [
                 {
@@ -630,17 +1544,6 @@
                     lng: 25.931531,
                     schedule: '24 dec, 18:00-21:00',
                     notes: 'Sunați la interfon'
-                },
-                {
-                    id: 'demo2', 
-                    name: 'Familie Ionescu',
-                    address: 'Macesului',
-                    streetNumber: '8',
-                    icon: '🎅',
-                    lat: 44.546593,
-                    lng: 25.932531,
-                    schedule: '23-24 dec, 17:00-20:00',
-                    notes: 'Poartă albastră'
                 }
             ];
             updateMap();
@@ -673,7 +1576,6 @@
                     })
                 }).addTo(map);
                 
-                // Tooltip simplu fără butoane pentru testare
                 let tooltipContent = `
                     <div class="custom-tooltip">
                         <div class="tooltip-family">
@@ -722,7 +1624,7 @@
                     // Verificăm dacă click-ul a fost pe butonul de ștergere
                     if (e.originalEvent && e.originalEvent.target && 
                         e.originalEvent.target.classList.contains('delete-btn')) {
-                        return; // Dacă a fost pe butonul de ștergere, nu face nimic
+                        return;
                     }
                     
                     // Altfel, bifează casa
@@ -783,19 +1685,6 @@
                 showToast('Eroare la ștergere: ' + error.message, 'error');
             }
         }
-        
-        // Funcții globale pentru butoanele din tooltip
-        window.tooltipToggleVisited = function(houseId) {
-            toggleVisited(houseId);
-            updateMap();
-        };
-        
-        window.tooltipShowPin = function(houseId) {
-            const pin = pins.find(p => p.id === houseId);
-            if (pin) {
-                showPin(pin);
-            }
-        };
         
         function updatePinCount() {
             const count = pins.length;
@@ -870,7 +1759,6 @@
             hideModal('delete-confirm-modal');
         }
         
-        // === SISTEM TRACKING VIZITE ===
         function toggleVisited(houseId) {
             if (visitedHouses[houseId]) {
                 delete visitedHouses[houseId];
@@ -907,7 +1795,6 @@
             showToast('✅ Toate vizitele au fost resetate!', 'success');
         }
         
-        // === SISTEM ADMIN ===
         function showAdminLogin() {
             showModal('admin-login-modal');
         }
@@ -935,7 +1822,6 @@
             }
         }
         
-        // === MODAL LISTA CASE ===
         function showListModal() {
             if (pins.length === 0) {
                 showToast('📭 Nu există case încă adăugate!', 'error');
@@ -986,118 +1872,6 @@
             hideModal('list-modal');
         }
         
-        function showPin(pin) {
-            selectedPin = pin;
-            const isVisited = visitedHouses[pin.id];
-            const addressText = `Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-            const userIsOwner = pin.password && pin.password.length > 0;
-            
-            let html = `
-                <div class="modal-header">
-                    <div>
-                        <h3 class="modal-title">${pin.name} ${isVisited ? '✅' : ''}</h3>
-                        <p class="pin-detail">
-                            <span>${isVisited ? '✅' : (pin.icon || '🎄')}</span>
-                            <span class="pin-info">${addressText}</span>
-                        </p>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem;">
-                        ${(isAdmin || userIsOwner) ? '<button class="icon-delete" onclick="showDeleteForm()">🗑️</button>' : ''}
-                        <button class="close-btn" onclick="closeViewModal()">×</button>
-                    </div>
-                </div>
-            `;
-            
-            if (pin.schedule) {
-                html += `<div class="pin-schedule">
-                    <strong>🕐 Program preferat:</strong><br>
-                    ${pin.schedule}
-                </div>`;
-            }
-            
-            if (pin.notes) {
-                html += `<div class="pin-notes">
-                    <strong>📝 Detalii:</strong><br>
-                    ${pin.notes}
-                </div>`;
-            }
-            
-            // Buton de marcare pentru toți
-            html += `
-                <div class="checkbox-container" style="margin: 1rem 1.25rem;">
-                    <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
-                    <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat la această casă</span>
-                </div>
-            `;
-            
-            // Mesaj informativ pentru ștergere
-            if (userIsOwner && !isAdmin) {
-                html += `
-                    <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.5rem; padding: 0.75rem; margin: 0 1.25rem;">
-                        <p style="font-size: 0.875rem; color: #92400e; margin: 0;">
-                            💡 Poți șterge această casă folosind parola pe care ai setat-o.
-                        </p>
-                    </div>
-                `;
-            }
-            
-            document.getElementById('view-content').innerHTML = html;
-            showModal('view-modal');
-            document.getElementById('delete-form').classList.add('hidden');
-        }
-        
-        function closeViewModal() {
-            hideModal('view-modal');
-            selectedPin = null;
-            document.getElementById('view-content').style.display = 'block';
-            document.getElementById('delete-form').classList.add('hidden');
-        }
-        
-        function showDeleteForm() {
-            document.getElementById('view-content').style.display = 'none';
-            document.getElementById('delete-form').classList.remove('hidden');
-        }
-        
-        function closeDeleteForm() {
-            document.getElementById('view-content').style.display = 'block';
-            document.getElementById('delete-form').classList.add('hidden');
-            document.getElementById('delete-password').value = '';
-        }
-        
-        function confirmDelete() {
-            if (!selectedPin) return;
-            
-            const password = document.getElementById('delete-password').value;
-            
-            if (!password) {
-                showToast('Te rog introdu parola!', 'error');
-                return;
-            }
-            
-            const isAdminUser = password === ADMIN_PASSWORD;
-            const isOwner = selectedPin.password && password === selectedPin.password;
-            
-            if (!isAdminUser && !isOwner) {
-                showToast('❌ Parolă incorectă!', 'error');
-                document.getElementById('delete-password').value = '';
-                return;
-            }
-            
-            try {
-                const database = firebase.database();
-                database.ref('pins/' + selectedPin.id).remove()
-                    .then(() => {
-                        closeViewModal();
-                        showToast('✅ Pin șters cu succes!');
-                    })
-                    .catch((error) => {
-                        showToast('Eroare la ștergere: ' + error.message, 'error');
-                    });
-            } catch (error) {
-                showToast('Eroare la ștergere: ' + error.message, 'error');
-            }
-        }
-        
         function handleSubmit(e) {
             e.preventDefault();
             
@@ -1122,7 +1896,6 @@
                 return;
             }
             
-            // === VERIFICARE ZONĂ LA SUBMIT ===
             if (!isInZone(clickedLocation.lat, clickedLocation.lng)) {
                 showError('❌ Poți adăuga doar case din Cartierul Tineri!\n\nSelectează o locație în interiorul zonei marcate cu roșu.');
                 return;
@@ -1185,7 +1958,6 @@
                     const lng = position.coords.longitude;
                     const accuracy = position.coords.accuracy;
                     
-                    // Verifică dacă locația este în zonă
                     if (!isInZone(lat, lng)) {
                         showToast('❌ Ești în afara Cartierului Tineri! Folosește click pe hartă.', 'error');
                         resetGpsButton();
