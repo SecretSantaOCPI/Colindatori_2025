@@ -133,9 +133,9 @@
         
         /* BUTON ADAUGA CASA - DREAPTA */
         #add-btn-right {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #dc2626, #16a34a);
             color: white;
             border: none;
@@ -147,14 +147,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
-        }
-        
-        .btn-text {
-            font-size: 16px;
-            font-weight: 600;
-            display: none;
         }
         
         #add-btn-right:hover {
@@ -164,9 +156,9 @@
 
         /* BUTON SHARE - DREAPTA */
         #share-btn-right {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: #25d366;
             color: white;
             border: none;
@@ -177,8 +169,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
         }
         
         #share-btn-right:hover {
@@ -199,9 +189,9 @@
         
         /* BUTON CENTRARE STANGA */
         #center-btn {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: #8b5cf6;
             color: white;
             border: none;
@@ -212,8 +202,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
         }
         
         #center-btn:hover {
@@ -223,9 +211,9 @@
 
         /* BUTON GPS STANGA */
         #gps-btn {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: #10b981;
             color: white;
             border: none;
@@ -236,8 +224,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
         }
         
         #gps-btn:hover {
@@ -898,36 +884,6 @@
             z-index: 1000;
         }
         
-        /* Buton ștergere în tooltip */
-        .delete-btn {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 8px;
-            width: 100%;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-        
-        .delete-btn:hover {
-            background: #b91c1c;
-        }
-        
-        /* Modal confirmare ștergere */
-        .delete-confirm-modal {
-            max-width: 400px;
-        }
-        
-        .delete-actions {
-            display: flex;
-            gap: 0.75rem;
-            padding: 0 1.25rem 1.25rem;
-        }
-        
         /* Pe mobil, ajustări de poziționare */
         @media (max-width: 767px) {
             .connection-status {
@@ -978,19 +934,9 @@
                 width: 18px;
                 height: 18px;
             }
-            
-            /* Pe mobil, butoanele sunt doar cu iconițe */
-            #add-btn-right, #share-btn-right, #center-btn, #gps-btn {
-                width: 60px;
-                padding: 0;
-            }
-            
-            .btn-text {
-                display: none !important;
-            }
         }
         
-        /* Pe desktop, bradul mai sus și butoane cu text */
+        /* Pe desktop, bradul mai sus */
         @media (min-width: 768px) {
             #header p {
                 display: block;
@@ -1012,15 +958,6 @@
             .connection-status {
                 top: 140px;
                 right: 30px;
-            }
-            
-            /* Pe desktop, butoanele au și text */
-            .btn-text {
-                display: block;
-            }
-            
-            #add-btn-right, #share-btn-right, #center-btn, #gps-btn {
-                min-width: 180px;
             }
         }
     </style>
@@ -1059,11 +996,9 @@
         <div id="left-controls">
             <button id="center-btn" title="Centrare hartă pe Cartierul Tineri">
                 🏠
-                <span class="btn-text">Centrare Hartă</span>
             </button>
             <button id="gps-btn" title="Folosește locația ta actuală">
                 📍
-                <span class="btn-text">Locația mea</span>
             </button>
         </div>
         
@@ -1071,11 +1006,9 @@
         <div id="right-controls">
             <button id="share-btn-right" title="Share pe WhatsApp">
                 📱
-                <span class="btn-text">Share</span>
             </button>
             <button id="add-btn-right" title="Adaugă casă">
                 +
-                <span class="btn-text">Adaugă casă</span>
             </button>
         </div>
         
@@ -1215,7 +1148,7 @@
                     <button onclick="showAdminLogin()" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
                         Login Admin
                     </button>
-                    <button onclick="resetAllVisited()" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
+                    <button onclick="resetAllVisited()" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.5rem 1rem;" id="reset-btn" disabled>
                         Reset Vizite
                     </button>
                 </div>
@@ -1251,37 +1184,6 @@
             </div>
         </div>
         
-        <!-- Modal de confirmare ștergere -->
-        <div id="delete-confirm-modal" class="modal delete-confirm-modal hidden">
-            <div class="modal-header">
-                <h3 class="modal-title" style="color: #dc2626;">
-                    <span style="font-size: 1.5rem;">🗑️</span>
-                    Confirmă Ștergerea
-                </h3>
-                <button class="close-btn" onclick="closeDeleteConfirmModal()">×</button>
-            </div>
-            
-            <div class="form-group">
-                <p>Ești sigur că vrei să ștergi această casă?</p>
-                <p class="hint-text" id="delete-house-info"></p>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Introdu parola:</label>
-                <input type="password" class="form-input" id="delete-confirm-password" placeholder="Parola de ștergere" required>
-                <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau parola de admin</p>
-            </div>
-            
-            <div class="delete-actions">
-                <button onclick="confirmPinDelete()" class="btn btn-danger" style="flex: 1;">
-                    Șterge
-                </button>
-                <button onclick="closeDeleteConfirmModal()" class="btn btn-secondary" style="flex: 1;">
-                    Anulează
-                </button>
-            </div>
-        </div>
-        
         <div id="loading">
             <div style="text-align: center;">
                 <div class="spinner"></div>
@@ -1305,7 +1207,7 @@
         const ADMIN_PASSWORD = 'colind2025';
         const ICONS = ['🎄', '🎅', '⭐', '🔔', '🎁', '❄️', '🕯️', '🦌', '🧦', '🍪', '🤶', '✨'];
         
-        // STRĂZI CORECTATE
+        // STRĂZI CORECTATE - Salviei în loc de Salbiei
         const PREDEFINED_STREETS = [
             "Catinei", "Ciocarliei", "Codrului", "Dafinului", "Dropiei", 
             "Frasinului", "Gutuiului", "Lujerului", "Macesului", "Magnoliei",
@@ -1332,35 +1234,14 @@
         let isAdmin = false;
         let visitedHouses = JSON.parse(localStorage.getItem('visitedHouses') || '{}');
         
-        // Variabilă globală pentru funcția de ștergere
-        let deletePinFunction = null;
-        
         document.addEventListener('DOMContentLoaded', init);
         
         function init() {
+            initFirebase();
             initMap();
             initIconGrid();
             initStreetInput();
             setupEventListeners();
-            
-            // Inițializăm funcția globală pentru ștergere
-            deletePinFunction = function(houseId) {
-                const pin = pins.find(p => p.id === houseId);
-                if (pin) {
-                    selectedPin = pin;
-                    document.getElementById('delete-house-info').textContent = 
-                        `${pin.icon || '🎄'} ${pin.name} - Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-                    document.getElementById('delete-confirm-password').value = '';
-                    showModal('delete-confirm-modal');
-                }
-            };
-            
-            // Facem funcția disponibilă global
-            window.deletePinFromMap = deletePinFunction;
-            
-            setTimeout(() => {
-                initFirebase();
-            }, 500);
         }
         
         function setupEventListeners() {
@@ -1372,15 +1253,18 @@
             document.getElementById('modal-overlay').addEventListener('click', closeAllModals);
         }
         
+        // === FUNCȚIE SHARE WHATSAPP ===
         function shareOnWhatsApp() {
             const text = '🎄 Colindatori Bine Veniti! 🎅\n\nHarta caselor care primesc colindatori.\nAdauga si casa ta: ' + window.location.href;
             
+            // Folosește API-ul nativ de share dacă e disponibil (pe mobil)
             if (navigator.share) {
                 navigator.share({
                     title: 'Colindatori Buftea',
                     text: text
-                });
+                }).catch(err => console.log('Share error:', err));
             } else {
+                // Fallback pentru desktop
                 const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
                 window.open(whatsappUrl, '_blank');
             }
@@ -1388,8 +1272,10 @@
         
         function centerToCartier() {
             map.setView(CARTIER_CENTER, 17);
+            showToast('🏠 Centrat pe Cartierul Tineri');
         }
         
+        // === VERIFICARE ZONĂ ===
         function isInZone(lat, lng) {
             let inside = false;
             for (let i = 0, j = ZONE_BOUNDS.length - 1; i < ZONE_BOUNDS.length; j = i++) {
@@ -1420,6 +1306,7 @@
                 opacity: 0.8
             }).addTo(map);
             
+            // Adaugă tooltip la poligon
             zonePolygon.bindTooltip('🎄 Cartierul Tineri - Zona Colindători', {
                 permanent: false,
                 direction: 'center',
@@ -1430,7 +1317,9 @@
                 const lat = e.latlng.lat;
                 const lng = e.latlng.lng;
                 
+                // Verifică dacă click-ul este în zonă
                 if (!isInZone(lat, lng)) {
+                    showToast('❌ Poți adăuga doar case din Cartierul Tineri!', 'error');
                     return;
                 }
                 
@@ -1513,7 +1402,7 @@
         function validateStreetInput(inputElement) {
             const value = inputElement.value.trim();
             if (value && !PREDEFINED_STREETS.includes(value)) {
-                // Mesaj eliminat
+                showToast('⚠️ Strada nu se află în lista străzilor din Cartierul Tineri. Verifică dacă ai scris corect.', 'error');
             }
         }
         
@@ -1526,24 +1415,19 @@
         
         function initFirebase() {
             try {
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-                
+                firebase.initializeApp(firebaseConfig);
                 const database = firebase.database();
                 
                 const connectedRef = database.ref(".info/connected");
                 connectedRef.on("value", function(snap) {
                     isConnected = snap.val() === true;
                     updateConnectionStatus();
-                    
-                    if (isConnected) {
-                        loadPins();
-                    }
                 });
                 
+                loadPins();
             } catch (error) {
-                loadDemoData();
+                console.error("Eroare la inițializarea Firebase:", error);
+                showToast("Eroare de conexiune cu baza de date", "error");
             }
         }
         
@@ -1562,51 +1446,30 @@
                 const database = firebase.database();
                 database.ref('pins').on('value', (snapshot) => {
                     pins = [];
-                    if (snapshot.exists()) {
-                        snapshot.forEach((child) => {
-                            pins.push({ id: child.key, ...child.val() });
-                        });
-                    }
+                    snapshot.forEach((child) => {
+                        pins.push({ id: child.key, ...child.val() });
+                    });
                     updateMap();
                     updatePinCount();
                 }, (error) => {
-                    loadDemoData();
+                    console.error("Eroare la încărcarea pin-urilor:", error);
+                    showToast("Eroare la încărcarea datelor", "error");
                 });
             } catch (error) {
-                loadDemoData();
+                console.error("Eroare la încărcarea pin-urilor:", error);
+                showToast("Eroare la încărcarea datelor", "error");
             }
-        }
-        
-        function loadDemoData() {
-            pins = [
-                {
-                    id: 'demo1',
-                    name: 'Familie Popescu',
-                    address: 'Salviei',
-                    streetNumber: '15',
-                    icon: '🎄',
-                    lat: 44.545593,
-                    lng: 25.931531,
-                    schedule: '24 dec, 18:00-21:00',
-                    notes: 'Sunați la interfon'
-                }
-            ];
-            updateMap();
-            updatePinCount();
         }
         
         function updateMap() {
             markers.forEach(marker => marker.remove());
             markers = [];
             
-            if (pins.length === 0) {
-                return;
-            }
-            
             pins.forEach(pin => {
                 const isVisited = visitedHouses[pin.id];
                 const icon = pin.icon || '🎄';
                 
+                // Creează marker-ul cu stil diferit pentru casele vizitate
                 const marker = L.marker([pin.lat, pin.lng], {
                     icon: L.divIcon({
                         html: `
@@ -1620,8 +1483,35 @@
                     })
                 }).addTo(map);
                 
-                // Creăm conținutul tooltip-ului
-                const tooltipContent = createTooltipContent(pin, isVisited);
+                // Tooltip detaliat cu toate informațiile
+                let tooltipContent = `
+                    <div class="custom-tooltip">
+                        <div class="tooltip-family">
+                            ${isVisited ? '✅ ' : ''}${pin.icon || '🎄'} ${pin.name}
+                            ${isVisited ? '<span style="color: #059669; font-size: 12px;">(Vizitată)</span>' : ''}
+                        </div>
+                        <div class="tooltip-address">
+                            📍 Str. ${pin.address}, Nr. ${pin.streetNumber}
+                        </div>
+                `;
+                
+                if (pin.schedule) {
+                    tooltipContent += `
+                        <div class="tooltip-schedule">
+                            🕐 ${pin.schedule}
+                        </div>
+                    `;
+                }
+                
+                if (pin.notes) {
+                    tooltipContent += `
+                        <div class="tooltip-notes">
+                            📝 ${pin.notes}
+                        </div>
+                    `;
+                }
+                
+                tooltipContent += `</div>`;
                 
                 marker.bindTooltip(tooltipContent, {
                     direction: 'top',
@@ -1630,101 +1520,14 @@
                     className: 'custom-tooltip-container'
                 });
                 
-                // Adăugăm event listener pentru tooltip
-                marker.on('tooltipopen', function() {
-                    // Adăugăm event listener pentru butonul de ștergere după ce tooltip-ul s-a deschis
-                    setTimeout(() => {
-                        const deleteBtn = document.querySelector('.leaflet-tooltip-pane .delete-btn');
-                        if (deleteBtn) {
-                            deleteBtn.onclick = function(e) {
-                                e.stopPropagation();
-                                deletePinFunction(pin.id);
-                            };
-                        }
-                    }, 100);
-                });
-                
-                // Click simplu pe marker → bifează
-                marker.on('click', (e) => {
+                // MODIFICARE: Toți utilizatorii pot bifa direct
+                marker.on('click', () => {
                     toggleVisited(pin.id);
+                    closeViewModal(); // Închide modalul dacă este deschis
                 });
                 
                 markers.push(marker);
             });
-        }
-        
-        function createTooltipContent(pin, isVisited) {
-            let content = `
-                <div class="custom-tooltip">
-                    <div class="tooltip-family">
-                        ${isVisited ? '✅ ' : ''}${pin.icon || '🎄'} ${pin.name}
-                        ${isVisited ? '<span style="color: #059669; font-size: 12px;">(Vizitată)</span>' : ''}
-                    </div>
-                    <div class="tooltip-address">
-                        📍 Str. ${pin.address}, Nr. ${pin.streetNumber}
-                    </div>
-            `;
-            
-            if (pin.schedule) {
-                content += `
-                    <div class="tooltip-schedule">
-                        🕐 ${pin.schedule}
-                    </div>
-                `;
-            }
-            
-            if (pin.notes) {
-                content += `
-                    <div class="tooltip-notes">
-                        📝 ${pin.notes}
-                    </div>
-                `;
-            }
-            
-            // Adăugăm buton pentru ștergere în tooltip
-            content += `
-                <div style="margin-top: 8px; display: flex; gap: 4px;">
-                    <button class="delete-btn" data-pin-id="${pin.id}">
-                        🗑️ Șterge
-                    </button>
-                </div>
-            </div>`;
-            
-            return content;
-        }
-        
-        function closeDeleteConfirmModal() {
-            hideModal('delete-confirm-modal');
-            selectedPin = null;
-        }
-        
-        function confirmPinDelete() {
-            if (!selectedPin) return;
-            
-            const password = document.getElementById('delete-confirm-password').value;
-            
-            if (!password) {
-                return;
-            }
-            
-            const isAdminUser = password === ADMIN_PASSWORD;
-            const isOwner = selectedPin.password && password === selectedPin.password;
-            
-            if (!isAdminUser && !isOwner) {
-                document.getElementById('delete-confirm-password').value = '';
-                return;
-            }
-            
-            try {
-                const database = firebase.database();
-                database.ref('pins/' + selectedPin.id).remove()
-                    .then(() => {
-                        closeDeleteConfirmModal();
-                    })
-                    .catch((error) => {
-                    });
-            } catch (error) {
-            }
         }
         
         function updatePinCount() {
@@ -1758,6 +1561,7 @@
         
         function openAddModal() {
             if (!clickedLocation) {
+                showToast('⚠️ Mai întâi selectează o locație pe hartă sau folosește butonul GPS!', 'error');
                 return;
             }
             showModal('add-modal');
@@ -1796,26 +1600,36 @@
             hideModal('view-modal');
             hideModal('list-modal');
             hideModal('admin-login-modal');
-            hideModal('delete-confirm-modal');
         }
         
+        // === SISTEM TRACKING VIZITE ===
         function toggleVisited(houseId) {
+            // MODIFICARE: Fără restricție de admin - toată lumea poate bifa
             if (visitedHouses[houseId]) {
                 delete visitedHouses[houseId];
+                showToast('✅ Casă marcată ca nevizitată');
             } else {
                 visitedHouses[houseId] = true;
+                showToast('✅ Casă marcată ca vizitată');
             }
             
             localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
-            updateMap();
+            updateMap(); // Actualizează direct harta
             updatePinCount();
             
+            // Actualizează lista dacă este deschisă
             if (!document.getElementById('list-modal').classList.contains('hidden')) {
                 showListModal();
             }
         }
         
         function resetAllVisited() {
+            // PĂSTRAT doar pentru reset (doar admin)
+            if (!isAdmin) {
+                showToast('❌ Nu ai permisiunea de a reseta vizitele!', 'error');
+                return;
+            }
+            
             visitedHouses = {};
             localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
             updateMap();
@@ -1824,8 +1638,11 @@
             if (!document.getElementById('list-modal').classList.contains('hidden')) {
                 showListModal();
             }
+            
+            showToast('✅ Toate vizitele au fost resetate!', 'success');
         }
         
+        // === SISTEM ADMIN ===
         function showAdminLogin() {
             showModal('admin-login-modal');
         }
@@ -1840,20 +1657,27 @@
             
             if (password === ADMIN_PASSWORD) {
                 isAdmin = true;
+                document.getElementById('reset-btn').disabled = false;
                 closeAdminLogin();
-                updateMap();
+                showToast('✅ Login admin reușit!', 'success');
                 
+                // Reîncarcă lista dacă este deschisă
                 if (!document.getElementById('list-modal').classList.contains('hidden')) {
                     showListModal();
                 }
+            } else {
+                showToast('❌ Parolă incorectă!', 'error');
             }
         }
         
+        // === MODAL LISTA CASE ===
         function showListModal() {
             if (pins.length === 0) {
+                showToast('📭 Nu există case încă adăugate!', 'error');
                 return;
             }
             
+            // Sortează casele după stradă și număr
             const sortedPins = [...pins].sort((a, b) => {
                 const streetCompare = a.address.localeCompare(b.address);
                 if (streetCompare !== 0) return streetCompare;
@@ -1863,33 +1687,40 @@
             const listContainer = document.getElementById('list-container');
             listContainer.innerHTML = '';
             
-            sortedPins.forEach(pin => {
-                const isVisited = visitedHouses[pin.id];
-                const listItem = document.createElement('div');
-                listItem.className = `list-item ${isVisited ? 'visited' : ''}`;
-                
-                const adminControls = `
-                    <div class="checkbox-container">
-                        <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
-                        <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat aici</span>
-                    </div>
-                    <button class="delete-btn" onclick="deletePinFromMap('${pin.id}')" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
-                        🗑️ Șterge
-                    </button>
-                `;
-                
-                listItem.innerHTML = `
-                    <div class="list-icon">${isVisited ? '✅' : (pin.icon || '🎄')}</div>
-                    <div class="list-details">
-                        <div class="list-family">${pin.name} ${isVisited ? '<span style="color: #059669; font-size: 12px;">(Vizitată)</span>' : ''}</div>
-                        <div class="list-address">Str. ${pin.address}, Nr. ${pin.streetNumber}</div>
-                        ${pin.schedule ? `<div class="list-schedule">🕐 ${pin.schedule}</div>` : ''}
-                        ${pin.notes ? `<div class="list-notes">📝 ${pin.notes}</div>` : ''}
-                        ${adminControls}
+            if (sortedPins.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-list">
+                        <p>📭 Nu există case încă adăugate!</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Fii primul care adaugă casa!</p>
                     </div>
                 `;
-                listContainer.appendChild(listItem);
-            });
+            } else {
+                sortedPins.forEach(pin => {
+                    const isVisited = visitedHouses[pin.id];
+                    const listItem = document.createElement('div');
+                    listItem.className = `list-item ${isVisited ? 'visited' : ''}`;
+                    
+                    // MODIFICARE: Checkbox-ul apare pentru toți, nu doar admin
+                    const adminControls = `
+                        <div class="checkbox-container">
+                            <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
+                            <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat aici</span>
+                        </div>
+                    `;
+                    
+                    listItem.innerHTML = `
+                        <div class="list-icon">${isVisited ? '✅' : (pin.icon || '🎄')}</div>
+                        <div class="list-details">
+                            <div class="list-family">${pin.name} ${isVisited ? '<span style="color: #059669; font-size: 12px;">(Vizitată)</span>' : ''}</div>
+                            <div class="list-address">Str. ${pin.address}, Nr. ${pin.streetNumber}</div>
+                            ${pin.schedule ? `<div class="list-schedule">🕐 ${pin.schedule}</div>` : ''}
+                            ${pin.notes ? `<div class="list-notes">📝 ${pin.notes}</div>` : ''}
+                            ${adminControls}
+                        </div>
+                    `;
+                    listContainer.appendChild(listItem);
+                });
+            }
             
             showModal('list-modal');
         }
@@ -1922,6 +1753,7 @@
                 return;
             }
             
+            // === VERIFICARE ZONĂ LA SUBMIT ===
             if (!isInZone(clickedLocation.lat, clickedLocation.lng)) {
                 showError('❌ Poți adăuga doar case din Cartierul Tineri!\n\nSelectează o locație în interiorul zonei marcate cu roșu.');
                 return;
@@ -1955,11 +1787,15 @@
                             window.tempMarker.remove();
                             window.tempMarker = null;
                         }
+                        
+                        showToast('✅ Casă adăugată cu succes!');
                     })
                     .catch((error) => {
+                        console.error('Save error:', error);
                         showError('Eroare la salvare: ' + error.message);
                     });
             } catch (error) {
+                console.error('Save error:', error);
                 showError('Eroare la salvare: ' + error.message);
             }
         }
@@ -1971,6 +1807,7 @@
             gpsBtn.innerHTML = '⏳';
             
             if (!navigator.geolocation) {
+                showToast('Geolocația nu este suportată de browser-ul tău', 'error');
                 resetGpsButton();
                 return;
             }
@@ -1981,7 +1818,9 @@
                     const lng = position.coords.longitude;
                     const accuracy = position.coords.accuracy;
                     
+                    // Verifică dacă locația este în zonă
                     if (!isInZone(lat, lng)) {
+                        showToast('❌ Ești în afara Cartierului Tineri! Folosește click pe hartă.', 'error');
                         resetGpsButton();
                         return;
                     }
@@ -2003,7 +1842,9 @@
                     
                     map.setView([lat, lng], 17);
                     
-                    gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
+                    showToast(`✅ Locație găsită! Precizie: ${Math.round(accuracy)} metri`, 'success');
+                    
+                    gpsBtn.innerHTML = '✅';
                     setTimeout(resetGpsButton, 2000);
                     
                     if (!document.getElementById('add-modal').classList.contains('hidden')) {
@@ -2011,6 +1852,22 @@
                     }
                 },
                 function(error) {
+                    let errorMessage = 'Eroare la obținerea locației: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += 'Ai refuzat accesul la locație.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += 'Locația nu este disponibilă.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage += 'Timeout la obținerea locației.';
+                            break;
+                        default:
+                            errorMessage += 'Eroare necunoscută.';
+                            break;
+                    }
+                    showToast(errorMessage, 'error');
                     resetGpsButton();
                 },
                 {
@@ -2025,7 +1882,109 @@
             const gpsBtn = document.getElementById('gps-btn');
             gpsBtn.disabled = false;
             gpsBtn.classList.remove('loading');
-            gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
+            gpsBtn.innerHTML = '📍';
+        }
+        
+        function showPin(pin) {
+            selectedPin = pin;
+            const isVisited = visitedHouses[pin.id];
+            const addressText = `Str. ${pin.address}, Nr. ${pin.streetNumber}`;
+            
+            let html = `
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">${pin.name} ${isVisited ? '✅' : ''}</h3>
+                        <p class="pin-detail">
+                            <span>${isVisited ? '✅' : (pin.icon || '🎄')}</span>
+                            <span class="pin-info">${addressText}</span>
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="icon-delete" onclick="showDeleteForm()">🗑️</button>
+                        <button class="close-btn" onclick="closeViewModal()">×</button>
+                    </div>
+                </div>
+            `;
+            
+            if (pin.schedule) {
+                html += `<div class="pin-schedule">
+                    <strong>🕐 Program preferat:</strong><br>
+                    ${pin.schedule}
+                </div>`;
+            }
+            
+            if (pin.notes) {
+                html += `<div class="pin-notes">
+                    <strong>📝 Detalii:</strong><br>
+                    ${pin.notes}
+                </div>`;
+            }
+            
+            // MODIFICARE: Butonul de marcare apare pentru toți
+            html += `
+                <div class="checkbox-container" style="margin: 1rem 1.25rem;">
+                    <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
+                    <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat la această casă</span>
+                </div>
+            `;
+            
+            document.getElementById('view-content').innerHTML = html;
+            showModal('view-modal');
+            document.getElementById('delete-form').classList.add('hidden');
+        }
+        
+        function closeViewModal() {
+            hideModal('view-modal');
+            selectedPin = null;
+            document.getElementById('view-content').style.display = 'block';
+            document.getElementById('delete-form').classList.add('hidden');
+        }
+        
+        function showDeleteForm() {
+            document.getElementById('view-content').style.display = 'none';
+            document.getElementById('delete-form').classList.remove('hidden');
+        }
+        
+        function closeDeleteForm() {
+            document.getElementById('view-content').style.display = 'block';
+            document.getElementById('delete-form').classList.add('hidden');
+            document.getElementById('delete-password').value = '';
+        }
+        
+        function confirmDelete() {
+            if (!selectedPin) return;
+            
+            const password = document.getElementById('delete-password').value;
+            
+            if (!password) {
+                showToast('Te rog introdu parola!', 'error');
+                return;
+            }
+            
+            const isAdmin = password === ADMIN_PASSWORD;
+            const isOwner = selectedPin.password && password === selectedPin.password;
+            
+            if (!isAdmin && !isOwner) {
+                showToast('❌ Parolă incorectă!', 'error');
+                document.getElementById('delete-password').value = '';
+                return;
+            }
+            
+            try {
+                const database = firebase.database();
+                database.ref('pins/' + selectedPin.id).remove()
+                    .then(() => {
+                        closeViewModal();
+                        showToast('✅ Pin șters cu succes!');
+                    })
+                    .catch((error) => {
+                        console.error('Delete error:', error);
+                        showToast('Eroare la ștergere: ' + error.message, 'error');
+                    });
+            } catch (error) {
+                console.error('Delete error:', error);
+                showToast('Eroare la ștergere: ' + error.message, 'error');
+            }
         }
     </script>
 </body>
