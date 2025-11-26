@@ -133,9 +133,9 @@
         
         /* BUTON ADAUGA CASA - DREAPTA */
         #add-btn-right {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #dc2626, #16a34a);
             color: white;
             border: none;
@@ -147,14 +147,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
-        }
-        
-        .btn-text {
-            font-size: 16px;
-            font-weight: 600;
-            display: none;
         }
         
         #add-btn-right:hover {
@@ -164,9 +156,9 @@
 
         /* BUTON SHARE - DREAPTA */
         #share-btn-right {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: #25d366;
             color: white;
             border: none;
@@ -177,8 +169,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
         }
         
         #share-btn-right:hover {
@@ -199,9 +189,9 @@
         
         /* BUTON CENTRARE STANGA */
         #center-btn {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: #8b5cf6;
             color: white;
             border: none;
@@ -212,8 +202,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
         }
         
         #center-btn:hover {
@@ -223,9 +211,9 @@
 
         /* BUTON GPS STANGA */
         #gps-btn {
-            min-width: 60px;
+            width: 60px;
             height: 60px;
-            border-radius: 30px;
+            border-radius: 50%;
             background: #10b981;
             color: white;
             border: none;
@@ -236,8 +224,6 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            padding: 0 20px;
-            gap: 8px;
         }
         
         #gps-btn:hover {
@@ -829,6 +815,51 @@
             backdrop-filter: blur(4px);
         }
 
+        /* Tooltip personalizat pentru informații detaliate */
+        .custom-tooltip {
+            background: white;
+            border: 2px solid #dc2626;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 280px;
+        }
+        
+        .tooltip-family {
+            font-weight: bold;
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tooltip-address {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .tooltip-schedule {
+            font-size: 13px;
+            color: #059669;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .tooltip-notes {
+            font-size: 13px;
+            color: #6b7280;
+            font-style: italic;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
         /* Stiluri pentru marker-ele vizitate */
         .visited-marker {
             opacity: 0.6;
@@ -853,42 +884,23 @@
             z-index: 1000;
         }
         
-        /* Butoane mari pentru acțiuni */
-        .action-btn-large {
-            padding: 1rem 1.5rem;
-            border: none;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            font-size: 1rem;
-            flex: 1;
-        }
-        
-        .btn-visited {
-            background: #10b981;
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
-        }
-        
-        .btn-visited:hover {
-            background: #059669;
-            transform: scale(1.05);
-        }
-        
-        .btn-delete {
+        /* Buton ștergere în tooltip */
+        .delete-btn {
             background: #dc2626;
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+            font-weight: 500;
+            transition: background 0.2s;
         }
         
-        .btn-delete:hover {
+        .delete-btn:hover {
             background: #b91c1c;
-            transform: scale(1.05);
         }
         
         /* Modal confirmare ștergere */
@@ -940,6 +952,11 @@
                 right: 10px;
             }
 
+            .custom-tooltip {
+                max-width: 250px;
+                padding: 10px;
+            }
+
             .visited-marker::before {
                 top: -6px;
                 right: -6px;
@@ -947,19 +964,9 @@
                 width: 18px;
                 height: 18px;
             }
-            
-            /* Pe mobil, butoanele sunt doar cu iconițe */
-            #add-btn-right, #share-btn-right, #center-btn, #gps-btn {
-                width: 60px;
-                padding: 0;
-            }
-            
-            .btn-text {
-                display: none !important;
-            }
         }
         
-        /* Pe desktop, bradul mai sus și butoane cu text */
+        /* Pe desktop, bradul mai sus */
         @media (min-width: 768px) {
             #header p {
                 display: block;
@@ -981,15 +988,6 @@
             .connection-status {
                 top: 140px;
                 right: 30px;
-            }
-            
-            /* Pe desktop, butoanele au și text */
-            .btn-text {
-                display: block;
-            }
-            
-            #add-btn-right, #share-btn-right, #center-btn, #gps-btn {
-                min-width: 180px;
             }
         }
     </style>
@@ -1028,11 +1026,9 @@
         <div id="left-controls">
             <button id="center-btn" title="Centrare hartă pe Cartierul Tineri">
                 🏠
-                <span class="btn-text">Centrare Hartă</span>
             </button>
             <button id="gps-btn" title="Folosește locația ta actuală">
                 📍
-                <span class="btn-text">Locația mea</span>
             </button>
         </div>
         
@@ -1040,11 +1036,9 @@
         <div id="right-controls">
             <button id="share-btn-right" title="Share pe WhatsApp">
                 📱
-                <span class="btn-text">Share</span>
             </button>
             <button id="add-btn-right" title="Adaugă casă">
                 +
-                <span class="btn-text">Adaugă casă</span>
             </button>
         </div>
         
@@ -1139,44 +1133,29 @@
             </form>
         </div>
         
-        <!-- Modal vizualizare casă -->
-        <div id="house-modal" class="modal modal-view hidden">
-            <div class="modal-header">
-                <h3 class="modal-title" id="house-modal-title">
-                    <span id="house-icon">🎄</span>
-                    <span id="house-name">Nume Familie</span>
-                </h3>
-                <button class="close-btn" onclick="closeHouseModal()">×</button>
-            </div>
-            
-            <div class="pin-detail">
-                <span>📍</span>
-                <span class="pin-info" id="house-address">Adresa casei</span>
-            </div>
-            
-            <div id="house-schedule-container" class="hidden">
-                <div class="pin-schedule">
-                    <strong>🕐 Program preferat:</strong><br>
-                    <span id="house-schedule">Programul casei</span>
+        <!-- Modal vizualizare -->
+        <div id="view-modal" class="modal modal-view hidden">
+            <div id="view-content"></div>
+            <div id="delete-form" class="hidden">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color: #dc2626;">Șterge Pin</h3>
+                    <button class="close-btn" onclick="closeDeleteForm()">×</button>
                 </div>
-            </div>
-            
-            <div id="house-notes-container" class="hidden">
-                <div class="pin-notes">
-                    <strong>📝 Detalii:</strong><br>
-                    <span id="house-notes">Detalii suplimentare</span>
+                
+                <div class="form-group">
+                    <label class="form-label">Introdu parola:</label>
+                    <input type="password" class="form-input" id="delete-password" placeholder="Parola de ștergere" required>
+                    <p class="hint-text">💡 Introdu parola ta dacă ai setat-o, sau cere adminului</p>
                 </div>
-            </div>
-            
-            <div class="divider"></div>
-            
-            <div class="action-buttons">
-                <button class="action-btn-large btn-visited" onclick="markHouseVisited()">
-                    ✅ Marchează Vizitată
-                </button>
-                <button class="action-btn-large btn-delete" onclick="showDeleteModal()">
-                    🗑️ Șterge Casa
-                </button>
+                
+                <div class="action-buttons">
+                    <button onclick="confirmDelete()" class="btn btn-danger" style="flex: 1;">
+                        Șterge Pin
+                    </button>
+                    <button onclick="closeDeleteForm()" class="btn btn-secondary" style="flex: 1;">
+                        Anulează
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -1199,7 +1178,7 @@
                     <button onclick="showAdminLogin()" class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
                         Login Admin
                     </button>
-                    <button onclick="resetAllVisited()" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.5rem 1rem;">
+                    <button onclick="resetAllVisited()" class="btn btn-danger" style="font-size: 0.75rem; padding: 0.5rem 1rem;" id="reset-btn">
                         Reset Vizite
                     </button>
                 </div>
@@ -1315,6 +1294,8 @@
         let zonePolygon = null;
         let isAdmin = false;
         let visitedHouses = JSON.parse(localStorage.getItem('visitedHouses') || '{}');
+        let lastClickTime = 0;
+        let clickTimer = null;
         
         document.addEventListener('DOMContentLoaded', init);
         
@@ -1586,79 +1567,81 @@
                     })
                 }).addTo(map);
                 
-                // Click pe marker → afișează modal cu detalii
-                marker.on('click', () => {
-                    showHouseModal(pin);
+                // Tooltip simplu
+                let tooltipContent = `
+                    <div class="custom-tooltip">
+                        <div class="tooltip-family">
+                            ${isVisited ? '✅ ' : ''}${pin.icon || '🎄'} ${pin.name}
+                        </div>
+                        <div class="tooltip-address">
+                            📍 Str. ${pin.address}, Nr. ${pin.streetNumber}
+                        </div>
+                `;
+                
+                if (pin.schedule) {
+                    tooltipContent += `
+                        <div class="tooltip-schedule">
+                            🕐 ${pin.schedule}
+                        </div>
+                    `;
+                }
+                
+                if (pin.notes) {
+                    tooltipContent += `
+                        <div class="tooltip-notes">
+                            📝 ${pin.notes}
+                        </div>
+                    `;
+                }
+                
+                tooltipContent += `
+                    <div style="margin-top: 8px; font-size: 11px; color: #6b7280;">
+                        Click pentru a marca vizitată<br>
+                        Dublu-click pentru a șterge
+                    </div>
+                </div>`;
+                
+                marker.bindTooltip(tooltipContent, {
+                    direction: 'top',
+                    offset: [0, -40],
+                    opacity: 0.95,
+                    className: 'custom-tooltip-container'
+                });
+                
+                // Sistem dublu-click pentru ștergere
+                marker.on('click', (e) => {
+                    const currentTime = new Date().getTime();
+                    const timeDiff = currentTime - lastClickTime;
+                    
+                    if (timeDiff < 300 && timeDiff > 0) {
+                        // Dublu-click detectat - arată modal de ștergere
+                        clearTimeout(clickTimer);
+                        showDeleteModalForPin(pin);
+                    } else {
+                        // Click simplu - marchează vizitată
+                        clickTimer = setTimeout(() => {
+                            toggleVisited(pin.id);
+                        }, 300);
+                    }
+                    
+                    lastClickTime = currentTime;
                 });
                 
                 markers.push(marker);
             });
         }
         
-        function showHouseModal(pin) {
+        function showDeleteModalForPin(pin) {
             selectedPin = pin;
-            const isVisited = visitedHouses[pin.id];
-            
-            // Actualizează conținutul modalului
-            document.getElementById('house-icon').textContent = pin.icon || '🎄';
-            document.getElementById('house-name').textContent = pin.name + (isVisited ? ' ✅' : '');
-            document.getElementById('house-address').textContent = `Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-            
-            // Program
-            const scheduleContainer = document.getElementById('house-schedule-container');
-            if (pin.schedule) {
-                document.getElementById('house-schedule').textContent = pin.schedule;
-                scheduleContainer.classList.remove('hidden');
-            } else {
-                scheduleContainer.classList.add('hidden');
-            }
-            
-            // Detalii
-            const notesContainer = document.getElementById('house-notes-container');
-            if (pin.notes) {
-                document.getElementById('house-notes').textContent = pin.notes;
-                notesContainer.classList.remove('hidden');
-            } else {
-                notesContainer.classList.add('hidden');
-            }
-            
-            showModal('house-modal');
-        }
-        
-        function closeHouseModal() {
-            hideModal('house-modal');
-            selectedPin = null;
-        }
-        
-        function markHouseVisited() {
-            if (!selectedPin) return;
-            
-            const houseId = selectedPin.id;
-            if (visitedHouses[houseId]) {
-                delete visitedHouses[houseId];
-            } else {
-                visitedHouses[houseId] = true;
-            }
-            
-            localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
-            updateMap();
-            updatePinCount();
-            closeHouseModal();
-        }
-        
-        function showDeleteModal() {
-            if (!selectedPin) return;
-            
             document.getElementById('delete-house-info').textContent = 
-                `${selectedPin.icon || '🎄'} ${selectedPin.name} - Str. ${selectedPin.address}, Nr. ${selectedPin.streetNumber}`;
+                `${pin.icon || '🎄'} ${pin.name} - Str. ${pin.address}, Nr. ${pin.streetNumber}`;
             document.getElementById('delete-confirm-password').value = '';
-            
-            hideModal('house-modal');
             showModal('delete-confirm-modal');
         }
         
         function closeDeleteConfirmModal() {
             hideModal('delete-confirm-modal');
+            selectedPin = null;
         }
         
         function confirmPinDelete() {
@@ -1756,10 +1739,26 @@
         
         function closeAllModals() {
             hideModal('add-modal');
-            hideModal('house-modal');
+            hideModal('view-modal');
             hideModal('list-modal');
             hideModal('admin-login-modal');
             hideModal('delete-confirm-modal');
+        }
+        
+        function toggleVisited(houseId) {
+            if (visitedHouses[houseId]) {
+                delete visitedHouses[houseId];
+            } else {
+                visitedHouses[houseId] = true;
+            }
+            
+            localStorage.setItem('visitedHouses', JSON.stringify(visitedHouses));
+            updateMap();
+            updatePinCount();
+            
+            if (!document.getElementById('list-modal').classList.contains('hidden')) {
+                showListModal();
+            }
         }
         
         function resetAllVisited() {
@@ -1801,10 +1800,15 @@
                 return;
             }
             
+            // Sortare corectă numerică pentru numerele poștale
             const sortedPins = [...pins].sort((a, b) => {
                 const streetCompare = a.address.localeCompare(b.address);
                 if (streetCompare !== 0) return streetCompare;
-                return a.streetNumber.localeCompare(b.streetNumber);
+                
+                // Extrage numerele din string-ul streetNumber pentru sortare numerică
+                const numA = parseInt(a.streetNumber.replace(/\D/g, '')) || 0;
+                const numB = parseInt(b.streetNumber.replace(/\D/g, '')) || 0;
+                return numA - numB;
             });
             
             const listContainer = document.getElementById('list-container');
@@ -1815,6 +1819,16 @@
                 const listItem = document.createElement('div');
                 listItem.className = `list-item ${isVisited ? 'visited' : ''}`;
                 
+                const adminControls = `
+                    <div class="checkbox-container">
+                        <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
+                        <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat aici</span>
+                    </div>
+                    <button class="delete-btn" onclick="showDeleteModalForPinFromList('${pin.id}')" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
+                        🗑️ Șterge
+                    </button>
+                `;
+                
                 listItem.innerHTML = `
                     <div class="list-icon">${isVisited ? '✅' : (pin.icon || '🎄')}</div>
                     <div class="list-details">
@@ -1822,11 +1836,7 @@
                         <div class="list-address">Str. ${pin.address}, Nr. ${pin.streetNumber}</div>
                         ${pin.schedule ? `<div class="list-schedule">🕐 ${pin.schedule}</div>` : ''}
                         ${pin.notes ? `<div class="list-notes">📝 ${pin.notes}</div>` : ''}
-                        <div style="margin-top: 8px; display: flex; gap: 8px;">
-                            <button class="btn-secondary" style="font-size: 0.7rem; padding: 0.4rem 0.8rem;" onclick="showHouseDetails('${pin.id}')">
-                                📋 Detalii
-                            </button>
-                        </div>
+                        ${adminControls}
                     </div>
                 `;
                 listContainer.appendChild(listItem);
@@ -1835,11 +1845,10 @@
             showModal('list-modal');
         }
         
-        function showHouseDetails(houseId) {
+        function showDeleteModalForPinFromList(houseId) {
             const pin = pins.find(p => p.id === houseId);
             if (pin) {
-                showHouseModal(pin);
-                closeListModal();
+                showDeleteModalForPin(pin);
             }
         }
         
@@ -1952,7 +1961,7 @@
                     
                     map.setView([lat, lng], 17);
                     
-                    gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
+                    gpsBtn.innerHTML = '📍';
                     setTimeout(resetGpsButton, 2000);
                     
                     if (!document.getElementById('add-modal').classList.contains('hidden')) {
@@ -1974,7 +1983,7 @@
             const gpsBtn = document.getElementById('gps-btn');
             gpsBtn.disabled = false;
             gpsBtn.classList.remove('loading');
-            gpsBtn.innerHTML = '📍<span class="btn-text">Locația mea</span>';
+            gpsBtn.innerHTML = '📍';
         }
     </script>
 </body>
