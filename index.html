@@ -1332,6 +1332,9 @@
         let isAdmin = false;
         let visitedHouses = JSON.parse(localStorage.getItem('visitedHouses') || '{}');
         
+        // Variabilă globală pentru funcția de ștergere
+        let deletePinFunction = null;
+        
         document.addEventListener('DOMContentLoaded', init);
         
         function init() {
@@ -1339,6 +1342,21 @@
             initIconGrid();
             initStreetInput();
             setupEventListeners();
+            
+            // Inițializăm funcția globală pentru ștergere
+            deletePinFunction = function(houseId) {
+                const pin = pins.find(p => p.id === houseId);
+                if (pin) {
+                    selectedPin = pin;
+                    document.getElementById('delete-house-info').textContent = 
+                        `${pin.icon || '🎄'} ${pin.name} - Str. ${pin.address}, Nr. ${pin.streetNumber}`;
+                    document.getElementById('delete-confirm-password').value = '';
+                    showModal('delete-confirm-modal');
+                }
+            };
+            
+            // Facem funcția disponibilă global
+            window.deletePinFromMap = deletePinFunction;
             
             setTimeout(() => {
                 initFirebase();
@@ -1602,41 +1620,8 @@
                     })
                 }).addTo(map);
                 
-                let tooltipContent = `
-                    <div class="custom-tooltip">
-                        <div class="tooltip-family">
-                            ${isVisited ? '✅ ' : ''}${pin.icon || '🎄'} ${pin.name}
-                            ${isVisited ? '<span style="color: #059669; font-size: 12px;">(Vizitată)</span>' : ''}
-                        </div>
-                        <div class="tooltip-address">
-                            📍 Str. ${pin.address}, Nr. ${pin.streetNumber}
-                        </div>
-                `;
-                
-                if (pin.schedule) {
-                    tooltipContent += `
-                        <div class="tooltip-schedule">
-                            🕐 ${pin.schedule}
-                        </div>
-                    `;
-                }
-                
-                if (pin.notes) {
-                    tooltipContent += `
-                        <div class="tooltip-notes">
-                            📝 ${pin.notes}
-                        </div>
-                    `;
-                }
-                
-                // Adăugăm buton pentru ștergere în tooltip
-                tooltipContent += `
-                    <div style="margin-top: 8px; display: flex; gap: 4px;">
-                        <button class="delete-btn" onclick="window.deletePinFromMap('${pin.id}')">
-                            🗑️ Șterge
-                        </button>
-                    </div>
-                </div>`;
+                // Creăm conținutul tooltip-ului
+                const tooltipContent = createTooltipContent(pin, isVisited);
                 
                 marker.bindTooltip(tooltipContent, {
                     direction: 'top',
@@ -1645,15 +1630,22 @@
                     className: 'custom-tooltip-container'
                 });
                 
+                // Adăugăm event listener pentru tooltip
+                marker.on('tooltipopen', function() {
+                    // Adăugăm event listener pentru butonul de ștergere după ce tooltip-ul s-a deschis
+                    setTimeout(() => {
+                        const deleteBtn = document.querySelector('.leaflet-tooltip-pane .delete-btn');
+                        if (deleteBtn) {
+                            deleteBtn.onclick = function(e) {
+                                e.stopPropagation();
+                                deletePinFunction(pin.id);
+                            };
+                        }
+                    }, 100);
+                });
+                
                 // Click simplu pe marker → bifează
                 marker.on('click', (e) => {
-                    // Verificăm dacă click-ul a fost pe butonul de ștergere
-                    if (e.originalEvent && e.originalEvent.target && 
-                        e.originalEvent.target.classList.contains('delete-btn')) {
-                        return;
-                    }
-                    
-                    // Altfel, bifează casa
                     toggleVisited(pin.id);
                 });
                 
@@ -1661,17 +1653,45 @@
             });
         }
         
-        // Funcție globală pentru ștergerea direct din hartă
-        window.deletePinFromMap = function(houseId) {
-            const pin = pins.find(p => p.id === houseId);
-            if (pin) {
-                selectedPin = pin;
-                document.getElementById('delete-house-info').textContent = 
-                    `${pin.icon || '🎄'} ${pin.name} - Str. ${pin.address}, Nr. ${pin.streetNumber}`;
-                document.getElementById('delete-confirm-password').value = '';
-                showModal('delete-confirm-modal');
+        function createTooltipContent(pin, isVisited) {
+            let content = `
+                <div class="custom-tooltip">
+                    <div class="tooltip-family">
+                        ${isVisited ? '✅ ' : ''}${pin.icon || '🎄'} ${pin.name}
+                        ${isVisited ? '<span style="color: #059669; font-size: 12px;">(Vizitată)</span>' : ''}
+                    </div>
+                    <div class="tooltip-address">
+                        📍 Str. ${pin.address}, Nr. ${pin.streetNumber}
+                    </div>
+            `;
+            
+            if (pin.schedule) {
+                content += `
+                    <div class="tooltip-schedule">
+                        🕐 ${pin.schedule}
+                    </div>
+                `;
             }
-        };
+            
+            if (pin.notes) {
+                content += `
+                    <div class="tooltip-notes">
+                        📝 ${pin.notes}
+                    </div>
+                `;
+            }
+            
+            // Adăugăm buton pentru ștergere în tooltip
+            content += `
+                <div style="margin-top: 8px; display: flex; gap: 4px;">
+                    <button class="delete-btn" data-pin-id="${pin.id}">
+                        🗑️ Șterge
+                    </button>
+                </div>
+            </div>`;
+            
+            return content;
+        }
         
         function closeDeleteConfirmModal() {
             hideModal('delete-confirm-modal');
@@ -1853,7 +1873,7 @@
                         <div class="checkbox ${isVisited ? 'checked' : ''}" onclick="toggleVisited('${pin.id}')"></div>
                         <span class="checkbox-label" onclick="toggleVisited('${pin.id}')">Am colindat aici</span>
                     </div>
-                    <button class="delete-btn" onclick="window.deletePinFromMap('${pin.id}')" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
+                    <button class="delete-btn" onclick="deletePinFromMap('${pin.id}')" style="margin-top: 8px; font-size: 11px; padding: 4px 8px;">
                         🗑️ Șterge
                     </button>
                 `;
