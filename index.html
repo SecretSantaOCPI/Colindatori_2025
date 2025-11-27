@@ -81,25 +81,27 @@
             background: rgba(255,255,255,0.3);
             transform: scale(1.05);
         }
-        
-        #instructions {
-            background: #f0f9ff;
-            border-bottom: 2px solid #0ea5e9;
-            padding: 0.6rem 1rem;
-            font-size: 0.75rem;
-            color: #0369a1;
-            flex-shrink: 0;
+
+        /* Buton Info/Help */
+        #info-btn {
+            background: rgba(255,255,255,0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            line-height: 1.4;
+            gap: 0.25rem;
         }
         
-        #instructions-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-            flex: 1;
+        #info-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
         }
         
         #main-container {
@@ -322,6 +324,13 @@
             transform: translate(-50%, -50%);
             max-width: 500px;
             max-height: 70vh;
+        }
+
+        .modal-info {
+            top: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 500px;
+            max-height: 80vh;
         }
         
         .modal-header {
@@ -689,7 +698,7 @@
         /* BRAD ANIMAT - FIXAT PE TOATE DISPOZITIVELE */
         .connection-status {
             position: fixed;
-            top: 120px;
+            top: 80px;
             right: 20px;
             z-index: 999;
             padding: 0.5rem;
@@ -914,11 +923,98 @@
             gap: 0.75rem;
             padding: 0 1.25rem 1.25rem;
         }
+
+        /* Stiluri pentru modalul de info */
+        .info-content {
+            padding: 0 1.25rem 1.25rem;
+        }
+        
+        .info-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-steps {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .info-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .step-number {
+            background: #0ea5e9;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .step-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        .tip-box {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .tip-title {
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .tip-content {
+            font-size: 0.875rem;
+            color: #0369a1;
+            line-height: 1.4;
+        }
         
         /* Pe mobil, ajustări de poziționare */
         @media (max-width: 767px) {
             .connection-status {
-                top: 110px;
+                top: 70px;
                 right: 10px;
                 padding: 0.4rem;
             }
@@ -930,21 +1026,6 @@
             .light {
                 width: 6px;
                 height: 6px;
-            }
-            
-            #instructions {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.7rem;
-                line-height: 1.3;
-            }
-            
-            #instructions-content {
-                flex-direction: column;
-                gap: 0.25rem;
-            }
-            
-            #instructions-content br {
-                display: none;
             }
             
             .modal {
@@ -975,9 +1056,18 @@
                 width: 18px;
                 height: 18px;
             }
+
+            #header-content {
+                gap: 0.25rem;
+            }
+
+            #pin-count, #info-btn {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+            }
         }
         
-        /* Pe desktop, afișează pe o singură linie */
+        /* Pe desktop */
         @media (min-width: 768px) {
             #header p {
                 display: block;
@@ -991,13 +1081,8 @@
                 font-size: 1.5rem;
             }
             
-            #instructions {
-                padding: 0.75rem 1rem;
-                font-size: 0.8rem;
-            }
-            
             .connection-status {
-                top: 140px;
+                top: 100px;
                 right: 30px;
             }
         }
@@ -1010,23 +1095,16 @@
                 <span style="font-size: 1.5rem;">📍</span>
                 <div>
                     <h1>Colindători Bine Veniți 🎄</h1>
-                    <p>Cartier Tineri, Buftea - Click pe hartă sau folosește GPS-ul să adaugi casa!</p>
+                    <p>Cartier Tineri, Buftea - Adaugă casa ta pe hartă!</p>
                 </div>
             </div>
-            <div id="pin-count" title="Click pentru lista caselor">
-                <span id="pin-count-text">0 case</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="instructions">
-        <div id="instructions-content">
-            <span>🎯</span>
-            <div>
-                <strong>Instrucțiuni rapide:</strong>
-                • <strong>Adaugă casa:</strong> Click pe hartă → "+" → Completează formularul<br>
-                • <strong>Marchează vizitată:</strong> Click simplu pe o casă de pe hartă<br>
-                • <strong>Șterge casa:</strong> Dublu-click pe o casă de pe hartă (cu parolă)
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button id="info-btn" title="Instrucțiuni de utilizare">
+                    ❓ Info
+                </button>
+                <div id="pin-count" title="Click pentru lista caselor">
+                    <span id="pin-count-text">0 case</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1071,6 +1149,83 @@
         
         <!-- Overlay pentru modale -->
         <div id="modal-overlay" class="modal-overlay hidden"></div>
+        
+        <!-- Modal Info/Help -->
+        <div id="info-modal" class="modal modal-info hidden">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <span style="font-size: 1.5rem;">❓</span>
+                    Instrucțiuni de utilizare
+                </h3>
+                <button class="close-btn" onclick="closeInfoModal()">×</button>
+            </div>
+            
+            <div class="info-content">
+                <div class="info-section">
+                    <h4 class="info-title">🎯 Cum adaugi casa ta:</h4>
+                    <ol class="info-steps">
+                        <li class="info-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Selectează locația</div>
+                                <div class="step-description">Click pe hartă în fața casei tale sau folosește butonul GPS</div>
+                            </div>
+                        </li>
+                        <li class="info-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Completează formularul</div>
+                                <div class="step-description">Apasă butonul "+" și completează detaliile casei tale</div>
+                            </div>
+                        </li>
+                        <li class="info-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Gata!</div>
+                                <div class="step-description">Casa ta va apărea pe hartă pentru colindători</div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="info-section">
+                    <h4 class="info-title">🎄 Cum colindezi:</h4>
+                    <ol class="info-steps">
+                        <li class="info-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <div class="step-title">Vezi casele disponibile</div>
+                                <div class="step-description">Casele cu emoji-uri pe hartă primesc colindători</div>
+                            </div>
+                        </li>
+                        <li class="info-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <div class="step-title">Marchează vizitată</div>
+                                <div class="step-description">Click simplu pe o casă pentru a o marca ca vizitată</div>
+                            </div>
+                        </li>
+                        <li class="info-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <div class="step-title">Șterge casa (dacă e necesar)</div>
+                                <div class="step-description">Dublu-click pe o casă pentru a o șterge (cu parolă)</div>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+                
+                <div class="tip-box">
+                    <div class="tip-title">💡 Sfaturi utile:</div>
+                    <div class="tip-content">
+                        • Poți seta o parolă când adaugi casa pentru a o putea șterge mai târziu<br>
+                        • Casele marcate cu ✅ au fost deja colindate<br>
+                        • Share-uiește harta cu prietenii folosind butonul 📱<br>
+                        • Zona activă este delimitată cu roșu pe hartă
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Modal adaugare -->
         <div id="add-modal" class="modal modal-add hidden">
@@ -1295,7 +1450,9 @@
             [44.542515, 25.930210], [44.545553, 25.935854]
         ];
         
-        const CARTIER_CENTER = [44.545593, 25.931531];
+        // Calculăm bounds pentru întreaga zonă pentru zoom optim
+        const ZONE_BOUNDS_LATLNG = ZONE_BOUNDS.map(coord => [coord[0], coord[1]]);
+        const ZONE_CENTER = [44.545593, 25.931531];
         
         let map;
         let markers = [];
@@ -1330,7 +1487,16 @@
             document.getElementById('center-btn').addEventListener('click', centerToCartier);
             document.getElementById('share-btn-right').addEventListener('click', shareOnWhatsApp);
             document.getElementById('pin-count').addEventListener('click', showListModal);
+            document.getElementById('info-btn').addEventListener('click', showInfoModal);
             document.getElementById('modal-overlay').addEventListener('click', closeAllModals);
+        }
+        
+        function showInfoModal() {
+            showModal('info-modal');
+        }
+        
+        function closeInfoModal() {
+            hideModal('info-modal');
         }
         
         function shareOnWhatsApp() {
@@ -1348,7 +1514,8 @@
         }
         
         function centerToCartier() {
-            map.setView(CARTIER_CENTER, 17);
+            // Folosim fitBounds pentru a afișa întreaga zonă
+            map.fitBounds(ZONE_BOUNDS_LATLNG, { padding: [20, 20] });
         }
         
         function isInZone(lat, lng) {
@@ -1365,12 +1532,15 @@
         }
         
         function initMap() {
-            map = L.map('map').setView(CARTIER_CENTER, 17);
+            map = L.map('map');
             
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19
             }).addTo(map);
+            
+            // Setăm view-ul inițial să afișeze întreaga zonă
+            map.fitBounds(ZONE_BOUNDS_LATLNG, { padding: [20, 20] });
             
             // Adaugă poligonul zonei
             zonePolygon = L.polygon(ZONE_BOUNDS, {
@@ -1392,6 +1562,7 @@
                 const lng = e.latlng.lng;
                 
                 if (!isInZone(lat, lng)) {
+                    showError('❌ Poți adăuga doar case din Cartierul Tineri!\n\nSelectează o locație în interiorul zonei marcate cu roșu.');
                     return;
                 }
                 
@@ -1713,6 +1884,7 @@
         
         function openAddModal() {
             if (!clickedLocation) {
+                showError('Te rog selectează mai întâi o locație pe hartă sau folosește butonul GPS!');
                 return;
             }
             showModal('add-modal');
@@ -1752,6 +1924,7 @@
             hideModal('list-modal');
             hideModal('admin-login-modal');
             hideModal('delete-confirm-modal');
+            hideModal('info-modal');
         }
         
         function toggleVisited(houseId) {
@@ -1950,6 +2123,7 @@
                     
                     if (!isInZone(lat, lng)) {
                         resetGpsButton();
+                        showError('❌ Locația ta nu este în Cartierul Tineri!\n\nTe rog folosește click pe hartă pentru a selecta o locație în zonă.');
                         return;
                     }
                     
@@ -1979,6 +2153,7 @@
                 },
                 function(error) {
                     resetGpsButton();
+                    showError('❌ Nu s-a putut obține locația ta.\n\nTe rog folosește click pe hartă pentru a selecta manual o locație.');
                 },
                 {
                     enableHighAccuracy: true,
